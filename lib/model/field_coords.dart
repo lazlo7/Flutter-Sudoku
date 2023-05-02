@@ -1,7 +1,7 @@
 class FieldCoords {
   final int row;
   final int col;
-  FieldCoords(this.row, this.col);
+  const FieldCoords(this.row, this.col);
 
   @override
   bool operator ==(Object other) {

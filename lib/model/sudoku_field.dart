@@ -5,6 +5,7 @@ import 'field_move.dart';
 
 class SudokuField {
   static const int emptyCellValue = 0;
+  static const FieldCoords invalidCoords = FieldCoords(-1, -1);
 
   // Current playable field.
   final List<List<int>> _field =
@@ -25,21 +26,22 @@ class SudokuField {
   /// Returns the notes of this field.
   Map<FieldCoords, List<int>> get notes => _notes;
 
-  /// Returns true if a such sudoku move is valid (i. e. can be made) on the field.
+  /// Returns invalidCoords constant if the move is valid,
+  /// otherwise returns the coords of the first found cell, that conflicts with the move.
   /// A sudoku move is valid iff the sudoku move's value is not present in the same row, column or 3x3 square
   /// and move's position is not occupied by a non-empty cell value.
-  bool isValidMove(FieldMove move) {
+  FieldCoords isValidMove(FieldMove move) {
     // Check if the move's value is present in the same row
     for (int col = 0; col < _field.length; col++) {
       if (_field[move.coords.row][col] == move.value) {
-        return false;
+        return FieldCoords(move.coords.row, col); 
       }
     }
 
     // Check if the move's value is present in the same column
     for (int row = 0; row < _field.length; row++) {
       if (_field[row][move.coords.col] == move.value) {
-        return false;
+        return FieldCoords(row, move.coords.col);
       }
     }
 
@@ -49,12 +51,12 @@ class SudokuField {
     for (int row = squareRow * 3; row < squareRow * 3 + 3; row++) {
       for (int col = squareCol * 3; col < squareCol * 3 + 3; col++) {
         if (_field[row][col] == move.value) {
-          return false;
+          return FieldCoords(row, col);
         }
       }
     }
 
-    return true;
+    return invalidCoords;
   }
 
   /// Returns true if the sudoku field is solved (i. e. the board is full of non-empty cell values).
@@ -71,13 +73,14 @@ class SudokuField {
   }
 
   /// Sets the cell at the given row and column to the given value.
-  /// Returns true if the cell was set successfully (the provided move was valid), false otherwise.
-  bool setCell(FieldMove move) {
-    if (isValidMove(move)) {
+  /// Returns invalidCoords constant if the cell was set successfully (the provided move was valid),
+  /// otherwise returns the coords of the first found cell, that conflicts with the move.
+  FieldCoords setCell(FieldMove move) {
+    FieldCoords conflictingCoords = isValidMove(move);
+    if (conflictingCoords == SudokuField.invalidCoords) {
       _field[move.coords.row][move.coords.col] = move.value;
-      return true;
     }
-    return false;
+    return conflictingCoords;
   }
 
   /// Clears the cell at the given row and column.
