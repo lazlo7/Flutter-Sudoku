@@ -15,7 +15,7 @@ class SudokuPlayableAreaWidget extends StatefulWidget {
 
 class _SudokuPlayableAreaWidgetState extends State<SudokuPlayableAreaWidget> {
   FieldCoords selectedCellCoords = SudokuField.invalidCoords;
-  int selectedNumberButtonIndex = -1;
+  FieldCoords conflictingCellCoords = SudokuField.invalidCoords;
 
   @override
   Widget build(BuildContext context) {
@@ -34,23 +34,28 @@ class _SudokuPlayableAreaWidgetState extends State<SudokuPlayableAreaWidget> {
                 var col = index % 9;
                 var cellValue = widget._sudokuField.field[row][col];
 
+                var coords = FieldCoords(row, col);
+                BoxBorder cellBorder;
+                if (coords == conflictingCellCoords) {
+                  cellBorder = Border.all(color: Colors.red, width: 2);
+                } else if (coords == selectedCellCoords) {
+                  cellBorder = Border.all(color: Colors.blue, width: 2);
+                } else {
+                  cellBorder = Border.all(color: Colors.black, width: 1);
+                }
+
                 return Container(
-                  decoration: BoxDecoration(
-                    border: selectedCellCoords.row == row &&
-                            selectedCellCoords.col == col
-                        ? Border.all(
-                            color: Colors.blue,
-                            width: 2,
-                          )
-                        : Border.all(
-                            color: Colors.black,
-                            width: 1,
-                          ),
-                  ),
+                  decoration: BoxDecoration(border: cellBorder),
                   child: TextButton(
                       style: const ButtonStyle(
                           splashFactory: NoSplash.splashFactory),
-                      onPressed: () => onFieldCellPressed(row, col),
+                      onPressed: () {
+                        if (row != selectedCellCoords.row ||
+                            col != selectedCellCoords.col) {
+                          setState(
+                              () => selectedCellCoords = FieldCoords(row, col));
+                        }
+                      },
                       child: Text(
                         cellValue == SudokuField.emptyCellValue
                             ? ""
@@ -115,26 +120,23 @@ class _SudokuPlayableAreaWidgetState extends State<SudokuPlayableAreaWidget> {
   }
 
   void onNumberButtonPressed(int index) {
-    if (index != selectedNumberButtonIndex) {
-      setState(() => selectedNumberButtonIndex =
-          selectedNumberButtonIndex == index ? -1 : index);
-      if (selectedCellCoords != SudokuField.invalidCoords) {
-        var move = FieldMove(
-            FieldCoords(selectedCellCoords.row, selectedCellCoords.col),
-            selectedNumberButtonIndex == -1
-                ? SudokuField.emptyCellValue
-                : selectedNumberButtonIndex + 1);
-        setState(() {
-          selectedCellCoords = SudokuField.invalidCoords;
-          widget._sudokuField.setCell(move);
-        });
-      }
+    if (selectedCellCoords == SudokuField.invalidCoords) {
+      return;
     }
-  }
 
-  void onFieldCellPressed(int row, int col) {
-    if (row != selectedCellCoords.row || col != selectedCellCoords.col) {
-      setState(() => selectedCellCoords = FieldCoords(row, col));
+    var move = FieldMove(
+        FieldCoords(selectedCellCoords.row, selectedCellCoords.col), index + 1);
+
+    setState(() {
+      selectedCellCoords = SudokuField.invalidCoords;
+      conflictingCellCoords = widget._sudokuField.setCell(move);
+    });
+
+    if (conflictingCellCoords != SudokuField.invalidCoords) {
+      Future.delayed(const Duration(seconds: 1), () {
+        print("Removed conflicting coords");
+        setState(() => conflictingCellCoords = SudokuField.invalidCoords);
+      });
     }
   }
 }
