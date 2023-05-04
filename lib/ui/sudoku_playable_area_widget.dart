@@ -134,7 +134,6 @@ class _SudokuPlayableAreaWidgetState extends State<SudokuPlayableAreaWidget> {
 
     if (conflictingCellCoords != SudokuField.invalidCoords) {
       Future.delayed(const Duration(seconds: 1), () {
-        print("Removed conflicting coords");
         setState(() => conflictingCellCoords = SudokuField.invalidCoords);
       });
     }
