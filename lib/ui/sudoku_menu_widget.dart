@@ -16,10 +16,10 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
     return Scaffold(
         body: Column(
       children: [
-        const SizedBox(height: 170),
+        const SizedBox(height: 200),
         const Text("Судоку",
             style: TextStyle(color: Colors.blueGrey, fontSize: 38)),
-        const SizedBox(height: 140),
+        const SizedBox(height: 160),
         Padding(
             padding: const EdgeInsets.only(left: 20, right: 20),
             child: Row(
@@ -37,30 +37,28 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
                     icon: const Icon(Icons.arrow_forward))
               ],
             )),
-        const SizedBox(height: 10),
+        const SizedBox(height: 30),
         ElevatedButton.icon(
             onPressed: onPlayButtonPressed,
             icon: const Icon(Icons.play_arrow),
-            label: const Text("Играть")),
+            label: const Text("Играть", style: TextStyle(fontSize: 20))),
         const SizedBox(height: 20),
-        Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              buildLevelButton(
-                  onPressed: onCreateLevelButtonPressed,
-                  icon: Icons.add,
-                  label: "Создать\nуровень"),
-              buildLevelButton(
-                  onPressed: onLevelsButtonPressed,
-                  icon: Icons.more_horiz,
-                  label: "Уровни"),
-              buildLevelButton(
-                  onPressed: onImportLevelButtonPressed,
-                  icon: Icons.file_download_outlined,
-                  label: "Импортировать\nуровень"),
-            ],
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            buildLevelButton(
+                onPressed: onCreateLevelButtonPressed,
+                icon: Icons.add,
+                label: "Создать"),
+            buildLevelButton(
+                onPressed: onLevelsButtonPressed,
+                icon: Icons.more_horiz,
+                label: "Уровни"),
+            buildLevelButton(
+                onPressed: onImportLevelButtonPressed,
+                icon: Icons.file_download_outlined,
+                label: "Импорт"),
+          ],
         )
       ],
     ));
@@ -70,10 +68,16 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
       {required IconData icon,
       required String label,
       required VoidCallback onPressed}) {
-    return Column(children: [
-      IconButton(onPressed: onPressed, icon: Icon(icon)),
-      Text(label, softWrap: true, textAlign: TextAlign.start)
-    ]);
+    return TextButton(
+        onPressed: onPressed,
+        child: Column(
+          children: [
+            Icon(icon, size: 32),
+            Text(label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 18))
+          ],
+        ));
   }
 
   void onSwitchDifficultyButtonPressed(bool next) {
