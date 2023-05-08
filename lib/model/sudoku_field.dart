@@ -1,15 +1,17 @@
 import 'dart:collection';
 
+import 'package:flutter_sudoku/model/field_cell_type.dart';
+
+import 'field_cell.dart';
 import 'field_coords.dart';
 import 'field_move.dart';
 
 class SudokuField {
-  static const int emptyCellValue = 0;
   static const FieldCoords invalidCoords = FieldCoords(-1, -1);
 
   // Current playable field.
-  final List<List<int>> _field =
-      List.generate(9, (index) => List.generate(9, (index) => emptyCellValue));
+  final List<List<FieldCell>> _field =
+      List.generate(9, (index) => List.generate(9, (index) => FieldCell()));
   // The solution to this field.
   final List<List<int>> _solution;
   // Maps a cell to it's notes (possible values left by the player).
@@ -18,7 +20,7 @@ class SudokuField {
   SudokuField(this._solution);
 
   /// Returns the field as a list of lists of integers.
-  List<List<int>> get field => _field;
+  List<List<FieldCell>> get field => _field;
 
   /// Returns the solution field as a list of lists of integers.
   List<List<int>> get solution => _solution;
@@ -33,14 +35,14 @@ class SudokuField {
   FieldCoords isValidMove(FieldMove move) {
     // Check if the move's value is present in the same row
     for (int col = 0; col < _field.length; col++) {
-      if (_field[move.coords.row][col] == move.value) {
+      if (_field[move.coords.row][col].value == move.value) {
         return FieldCoords(move.coords.row, col); 
       }
     }
 
     // Check if the move's value is present in the same column
     for (int row = 0; row < _field.length; row++) {
-      if (_field[row][move.coords.col] == move.value) {
+      if (_field[row][move.coords.col].value == move.value) {
         return FieldCoords(row, move.coords.col);
       }
     }
@@ -50,7 +52,7 @@ class SudokuField {
     int squareCol = move.coords.col ~/ 3;
     for (int row = squareRow * 3; row < squareRow * 3 + 3; row++) {
       for (int col = squareCol * 3; col < squareCol * 3 + 3; col++) {
-        if (_field[row][col] == move.value) {
+        if (_field[row][col].value == move.value) {
           return FieldCoords(row, col);
         }
       }
@@ -63,7 +65,7 @@ class SudokuField {
   bool isSolved() {
     for (int row = 0; row < _field.length; row++) {
       for (int col = 0; col < _field.length; col++) {
-        if (_field[row][col] == emptyCellValue) {
+        if (_field[row][col].type == FieldCellType.empty) {
           return false;
         }
       }
@@ -78,7 +80,7 @@ class SudokuField {
   FieldCoords setCell(FieldMove move) {
     FieldCoords conflictingCoords = isValidMove(move);
     if (conflictingCoords == SudokuField.invalidCoords) {
-      _field[move.coords.row][move.coords.col] = move.value;
+      _field[move.coords.row][move.coords.col] = FieldCell(value: move.value, type: FieldCellType.user);
     }
     return conflictingCoords;
   }
@@ -86,8 +88,8 @@ class SudokuField {
   /// Clears the cell at the given row and column.
   /// Returns true if the cell at the provided coords is not empty, false otherwise.
   bool clearCell(FieldCoords coords) {
-    if (_field[coords.row][coords.col] != emptyCellValue) {
-      _field[coords.row][coords.col] = emptyCellValue;
+    if (_field[coords.row][coords.col].type != FieldCellType.empty) {
+      _field[coords.row][coords.col].type = FieldCellType.empty;
       return true;
     }
     return false;

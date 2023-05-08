@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sudoku/model/field_cell_type.dart';
 import 'package:flutter_sudoku/model/field_coords.dart';
 
 import '../model/field_move.dart';
@@ -32,7 +33,7 @@ class _SudokuPlayableAreaWidgetState extends State<SudokuPlayableAreaWidget> {
               children: List.generate(81, (index) {
                 var row = index ~/ 9;
                 var col = index % 9;
-                var cellValue = widget._sudokuField.field[row][col];
+                var cell = widget._sudokuField.field[row][col];
 
                 var coords = FieldCoords(row, col);
                 BoxBorder cellBorder;
@@ -57,9 +58,9 @@ class _SudokuPlayableAreaWidgetState extends State<SudokuPlayableAreaWidget> {
                         }
                       },
                       child: Text(
-                        cellValue == SudokuField.emptyCellValue
+                        cell.type == FieldCellType.empty 
                             ? ""
-                            : cellValue.toString(),
+                            : cell.value.toString(),
                         style: const TextStyle(
                           fontSize: 20,
                         ),

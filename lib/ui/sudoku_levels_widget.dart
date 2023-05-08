@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sudoku/model/sudoku_field.dart';
+import 'package:flutter_sudoku/model/field_cell_type.dart';
 
 import '../model/sudoku_field_keeper.dart';
 
@@ -35,16 +35,16 @@ class _SudokuLevelsWidgetState extends State<SudokuLevelsWidget> {
                     children: List.generate(81, (index) {
                       final row = index ~/ 9;
                       final col = index % 9;
-                      final cellValue = sudokuField.field[row][col];
+                      final cell = sudokuField.field[row][col];
 
                       return Container(
                           decoration:
                               BoxDecoration(border: Border.all(width: 1)),
                           child: Center(
                               child: Text(
-                                  cellValue == SudokuField.emptyCellValue
+                                  cell.type == FieldCellType.empty
                                       ? ""
-                                      : cellValue.toString())));
+                                      : cell.value.toString())));
                     }),
                   ),
                 ));
