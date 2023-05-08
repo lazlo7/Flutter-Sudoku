@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sudoku/model/sudoku_difficulty.dart';
+import 'package:flutter_sudoku/model/sudoku_field_keeper.dart';
+import 'package:flutter_sudoku/model/sudoku_generator.dart';
+import 'package:flutter_sudoku/ui/sudoku_levels_widget.dart';
+import 'package:flutter_sudoku/ui/sudoku_playable_area_widget.dart';
 
 class SudokuMenuWidget extends StatefulWidget {
-  const SudokuMenuWidget({super.key});
+  const SudokuMenuWidget({required this.fieldKeeper, super.key});
+
+  final SudokuFieldKeeper fieldKeeper;
 
   @override
   State<StatefulWidget> createState() => _SudokuMenuWidgetState();
@@ -51,7 +57,11 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
                 icon: Icons.add,
                 label: "Создать"),
             buildLevelButton(
-                onPressed: onLevelsButtonPressed,
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SudokuLevelsWidget(
+                            fieldKeeper: widget.fieldKeeper))),
                 icon: Icons.more_horiz,
                 label: "Уровни"),
             buildLevelButton(
@@ -89,11 +99,14 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
   }
 
   void onPlayButtonPressed() {
-    // TODO: Add level generation here.
-    print("play button pressed");
+    final newField = SudokuGenerator.generate(sudokuDifficulty.clues);
+    widget.fieldKeeper.addField(newField);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SudokuPlayableAreaWidget(newField)));
   }
 
   void onCreateLevelButtonPressed() {}
-  void onLevelsButtonPressed() {}
   void onImportLevelButtonPressed() {}
 }
