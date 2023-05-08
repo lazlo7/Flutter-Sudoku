@@ -15,6 +15,7 @@ class SudokuPlayableAreaWidget extends StatefulWidget {
 }
 
 class _SudokuPlayableAreaWidgetState extends State<SudokuPlayableAreaWidget> {
+  Future<void>? conflictingRemoveFuture;
   FieldCoords selectedCellCoords = SudokuField.invalidCoords;
   FieldCoords conflictingCellCoords = SudokuField.invalidCoords;
 
@@ -134,8 +135,13 @@ class _SudokuPlayableAreaWidgetState extends State<SudokuPlayableAreaWidget> {
     });
 
     if (conflictingCellCoords != SudokuField.invalidCoords) {
-      Future.delayed(const Duration(seconds: 1), () {
-        setState(() => conflictingCellCoords = SudokuField.invalidCoords);
+      conflictingRemoveFuture = Future.delayed(const Duration(seconds: 1), () {
+        // setState only if widget is still mounted
+        if (mounted) {
+          setState(() {
+            conflictingCellCoords = SudokuField.invalidCoords;
+          });
+        } 
       });
     }
   }
