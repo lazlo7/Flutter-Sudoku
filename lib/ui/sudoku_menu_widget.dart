@@ -3,7 +3,7 @@ import 'package:flutter_sudoku/model/sudoku_difficulty.dart';
 import 'package:flutter_sudoku/model/sudoku_field_keeper.dart';
 import 'package:flutter_sudoku/model/sudoku_generator.dart';
 import 'package:flutter_sudoku/ui/sudoku_levels_widget.dart';
-import 'package:flutter_sudoku/ui/sudoku_playable_area_widget.dart';
+import 'package:flutter_sudoku/ui/sudoku_game_widget.dart';
 
 class SudokuMenuWidget extends StatefulWidget {
   const SudokuMenuWidget({required this.fieldKeeper, super.key});
