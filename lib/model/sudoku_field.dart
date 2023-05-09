@@ -10,14 +10,13 @@ class SudokuField {
   static const FieldCoords invalidCoords = FieldCoords(-1, -1);
 
   // Current playable field.
-  final List<List<FieldCell>> _field =
-      List.generate(9, (index) => List.generate(9, (index) => FieldCell()));
+  final List<List<FieldCell>> _field;
   // The solution to this field.
   final List<List<int>> _solution;
   // Maps a cell to it's notes (possible values left by the player).
   final Map<FieldCoords, List<int>> _notes = HashMap();
 
-  SudokuField(this._solution);
+  SudokuField(this._field, this._solution);
 
   /// Returns the field as a list of lists of integers.
   List<List<FieldCell>> get field => _field;

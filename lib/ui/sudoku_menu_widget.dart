@@ -99,7 +99,9 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
   }
 
   void onPlayButtonPressed() {
-    final newField = SudokuGenerator.generate(sudokuDifficulty.clues);
+    print("started generating new field");
+    final newField = SudokuGenerator.generateField(sudokuDifficulty.minClues, sudokuDifficulty.maxClues);
+    print("finished generating new field");
     widget.fieldKeeper.addField(newField);
     Navigator.push(
         context,

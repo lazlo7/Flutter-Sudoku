@@ -1,11 +1,12 @@
 enum SudokuDifficulty {
-  easy(name: "Легкий", clues: 45),
-  medium(name: "Средний", clues: 35),
-  hard(name: "Сложный", clues: 25),
-  expert(name: "Эксперт", clues: 18);
+  easy(name: "Легкий", minClues: 36, maxClues: 55),
+  medium(name: "Средний", minClues: 26, maxClues: 35),
+  hard(name: "Сложный", minClues: 20, maxClues: 25),
+  expert(name: "Эксперт", minClues: 17, maxClues: 19);
 
-  const SudokuDifficulty({required this.name, required this.clues});
+  const SudokuDifficulty({required this.name, required this.minClues, required this.maxClues});
 
   final String name;
-  final int clues;
+  final int minClues;
+  final int maxClues;
 }
