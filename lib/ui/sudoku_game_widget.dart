@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sudoku/model/field_cell_type.dart';
 import 'package:flutter_sudoku/model/field_coords.dart';
+import 'package:flutter_sudoku/model/icon_undertext_button.dart';
 import 'package:flutter_sudoku/model/sudoku_field_keeper.dart';
 
 import '../model/field_move.dart';
@@ -17,7 +18,7 @@ class SudokuGameWidget extends StatefulWidget {
 }
 
 class _SudokuGameWidgetState extends State<SudokuGameWidget> {
-  Future<void>? conflictingRemoveFuture;
+  bool notesMode = false;
   FieldCoords selectedCellCoords = SudokuField.invalidCoords;
   FieldCoords conflictingCellCoords = SudokuField.invalidCoords;
 
@@ -98,6 +99,47 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
                   buildNumberButton(7),
                   buildNumberButton(8)
                 ])),
+        const SizedBox(height: 30),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Undo button.
+            IconUnderTextButton.build(
+              icon: const Icon(Icons.undo),
+              text: const Text("Отмена",
+                  textAlign: TextAlign.center),
+              onPressed: onUndoButtonPressed,
+            ),
+            // Notes mode button.
+            IconUnderTextButton.build(
+              icon: notesMode
+                  ? const Icon(Icons.edit)
+                  : const Icon(Icons.edit_outlined),
+              text:
+                  const Text("Заметки", textAlign: TextAlign.center),
+              onPressed: onNotesButtonPressed,
+            ),
+            // Restart button.
+            IconUnderTextButton.build(
+              icon: const Icon(Icons.restart_alt),
+              text: const Text("Начать\nсначала",
+                  textAlign: TextAlign.center),
+              onPressed: onRestartButtonPressed,
+            ),
+            // Clear cell button.
+            IconUnderTextButton.build(
+              icon: const Icon(Icons.clear_outlined),
+              text: const Text("Очистка",
+                  textAlign: TextAlign.center),
+              onPressed: onClearCellButtonPressed,
+            ),
+            // Hint button.
+            IconUnderTextButton.build(
+                icon: const Icon(Icons.lightbulb_outline),
+                text: const Text("Подсказка", textAlign: TextAlign.center),
+                onPressed: onHintButtonPressed),
+          ],
+        )
       ],
     ));
   }
@@ -128,8 +170,8 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
   }
 
   onCellButtonPressed(int row, int col) {
-    final cell = widget._fieldKeeper.fields[widget._sudokuFieldId]!
-        .field[row][col];
+    final cell =
+        widget._fieldKeeper.fields[widget._sudokuFieldId]!.field[row][col];
     // Ignore clues.
     if (cell.type == FieldCellType.clue) {
       return;
@@ -137,11 +179,20 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
     setState(() {
       selectedCellCoords = FieldCoords(row, col);
     });
-  } 
+  }
 
   void onNumberButtonPressed(int index) {
     // Can't change the cell if no cell is selected.
     if (selectedCellCoords == SudokuField.invalidCoords) {
+      return;
+    }
+
+    if (notesMode) {
+      setState(() {
+        widget._fieldKeeper.fields[widget._sudokuFieldId]!.toggleNote(FieldMove(
+            FieldCoords(selectedCellCoords.row, selectedCellCoords.col),
+            index + 1));
+      });
       return;
     }
 
@@ -155,7 +206,7 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
     });
 
     if (conflictingCellCoords != SudokuField.invalidCoords) {
-      conflictingRemoveFuture = Future.delayed(const Duration(seconds: 1), () {
+      Future.delayed(const Duration(seconds: 1), () {
         // setState only if widget is still mounted
         if (mounted) {
           setState(() {
@@ -167,4 +218,17 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
       widget._fieldKeeper.saveFields();
     }
   }
+
+  void onUndoButtonPressed() {}
+
+  void onNotesButtonPressed() {
+    setState(() {
+      notesMode = !notesMode;
+    });
+  }
+
+  void onRestartButtonPressed() {}
+
+  void onClearCellButtonPressed() {}
+  void onHintButtonPressed() {}
 }

@@ -5,6 +5,8 @@ import 'package:flutter_sudoku/model/sudoku_generator.dart';
 import 'package:flutter_sudoku/ui/sudoku_levels_widget.dart';
 import 'package:flutter_sudoku/ui/sudoku_game_widget.dart';
 
+import '../model/icon_undertext_button.dart';
+
 class SudokuMenuWidget extends StatefulWidget {
   const SudokuMenuWidget({required this.fieldKeeper, super.key});
 
@@ -52,41 +54,33 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            buildLevelButton(
+            // iconSize: 32, textSize: 18, textAlign: center
+            IconUnderTextButton.build(
                 onPressed: onCreateLevelButtonPressed,
-                icon: Icons.add,
-                label: "Создать"),
-            buildLevelButton(
+                icon: const Icon(Icons.add, size: 32),
+                text: const Text("Создать",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18))),
+            IconUnderTextButton.build(
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => SudokuLevelsWidget(widget.fieldKeeper))),
-                icon: Icons.more_horiz,
-                label: "Уровни"),
-            buildLevelButton(
+                        builder: (context) =>
+                            SudokuLevelsWidget(widget.fieldKeeper))),
+                icon: const Icon(Icons.more_horiz, size: 32),
+                text: const Text("Уровни",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18))),
+            IconUnderTextButton.build(
                 onPressed: onImportLevelButtonPressed,
-                icon: Icons.file_download_outlined,
-                label: "Импорт"),
+                icon: const Icon(Icons.file_download_outlined, size: 32),
+                text: const Text("Импорт",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18))),
           ],
         )
       ],
     ));
-  }
-
-  Widget buildLevelButton(
-      {required IconData icon,
-      required String label,
-      required VoidCallback onPressed}) {
-    return TextButton(
-        onPressed: onPressed,
-        child: Column(
-          children: [
-            Icon(icon, size: 32),
-            Text(label,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18))
-          ],
-        ));
   }
 
   void onSwitchDifficultyButtonPressed(bool next) {
@@ -98,7 +92,8 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
   }
 
   void onPlayButtonPressed() {
-    final newField = SudokuGenerator.generateField(sudokuDifficulty.minClues, sudokuDifficulty.maxClues);
+    final newField = SudokuGenerator.generateField(
+        sudokuDifficulty.minClues, sudokuDifficulty.maxClues);
     final id = widget.fieldKeeper.addField(newField);
     Navigator.push(
         context,

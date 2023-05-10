@@ -100,15 +100,18 @@ class SudokuField {
 
   /// Adds a note for the given cell.
   /// Returns true if the cell doesn't contain the given note already, otherwise false.
-  bool addNote(FieldMove note) {
+  void toggleNote(FieldMove note) {
     if (!_notes.containsKey(note.coords)) {
       _notes[note.coords] = [note.value];
-      return true;
-    } else if (!_notes[note.coords]!.contains(note.value)) {
-      _notes[note.coords]!.add(note.value);
-      return true;
+      return;
+    } else if (_notes[note.coords]!.contains(note.value)) {
+      _notes[note.coords]!.remove(note.value);
+      return;
     }
-    return false;
+
+    _notes[note.coords]!.add(note.value);
+    _notes[note.coords]!.sort();
+    return;
   }
 
   /// Removes a note for the given cell.
