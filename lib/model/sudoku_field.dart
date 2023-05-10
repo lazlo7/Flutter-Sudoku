@@ -16,12 +16,9 @@ class SudokuField {
   // The solution to this field.
   final List<List<int>> solution;
   // Maps a cell to it's notes (possible values left by the player).
-  final Map<FieldCoords, List<int>> _notes = {};
+  final Map<FieldCoords, List<int>> notes = {};
 
   SudokuField(this.field, this.solution);
-
-  /// Returns the notes of this field.
-  Map<FieldCoords, List<int>> get notes => _notes;
 
   factory SudokuField.fromJson(Map<String, dynamic> json) =>
       _$SudokuFieldFromJson(json);
@@ -101,25 +98,25 @@ class SudokuField {
   /// Adds a note for the given cell.
   /// Returns true if the cell doesn't contain the given note already, otherwise false.
   void toggleNote(FieldMove note) {
-    if (!_notes.containsKey(note.coords)) {
-      _notes[note.coords] = [note.value];
+    if (!notes.containsKey(note.coords)) {
+      notes[note.coords] = [note.value];
       return;
-    } else if (_notes[note.coords]!.contains(note.value)) {
-      _notes[note.coords]!.remove(note.value);
+    } else if (notes[note.coords]!.contains(note.value)) {
+      notes[note.coords]!.remove(note.value);
       return;
     }
 
-    _notes[note.coords]!.add(note.value);
-    _notes[note.coords]!.sort();
+    notes[note.coords]!.add(note.value);
+    notes[note.coords]!.sort();
     return;
   }
 
   /// Removes a note for the given cell.
   /// Returns true if the cell contains the given note, otherwise false.
   bool removeNote(FieldMove note) {
-    if (_notes.containsKey(note.coords) &&
-        _notes[note.coords]!.contains(note.value)) {
-      _notes[note.coords]!.remove(note.value);
+    if (notes.containsKey(note.coords) &&
+        notes[note.coords]!.contains(note.value)) {
+      notes[note.coords]!.remove(note.value);
       return true;
     }
     return false;

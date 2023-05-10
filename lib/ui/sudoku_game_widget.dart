@@ -50,11 +50,35 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
                   cellBorder = Border.all(color: Colors.black, width: 1);
                 }
 
+                final notes = widget._fieldKeeper.fields[widget._sudokuFieldId]!
+                    .notes[FieldCoords(row, col)];
+                Widget cellText;
+
+                if (cell.type == FieldCellType.empty && notes != null) {
+                  cellText = Text(notes.map((e) => e.toString()).join(),
+                      textAlign: TextAlign.center,
+                      softWrap: true,
+                      style: const TextStyle(fontSize: 10, color: Colors.grey));
+                } else {
+                  cellText = Text(
+                    cell.type == FieldCellType.empty
+                        ? ""
+                        : cell.value.toString(),
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: cell.type == FieldCellType.clue
+                          ? Colors.blueGrey
+                          : Colors.black,
+                    ),
+                  );
+                }
+
                 return Container(
                   decoration: BoxDecoration(border: cellBorder),
                   child: TextButton(
-                      style: const ButtonStyle(
-                          splashFactory: NoSplash.splashFactory),
+                      style: TextButton.styleFrom(
+                          splashFactory: NoSplash.splashFactory,
+                          padding: const EdgeInsets.all(0)),
                       onPressed: () {
                         if (row != selectedCellCoords.row ||
                             col != selectedCellCoords.col) {
@@ -62,17 +86,7 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
                               () => selectedCellCoords = FieldCoords(row, col));
                         }
                       },
-                      child: Text(
-                        cell.type == FieldCellType.empty
-                            ? ""
-                            : cell.value.toString(),
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: cell.type == FieldCellType.clue
-                              ? Colors.grey
-                              : Colors.black,
-                        ),
-                      )),
+                      child: cellText),
                 );
               }),
             )),
@@ -106,8 +120,7 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
             // Undo button.
             IconUnderTextButton.build(
               icon: const Icon(Icons.undo),
-              text: const Text("Отмена",
-                  textAlign: TextAlign.center),
+              text: const Text("Отмена", textAlign: TextAlign.center),
               onPressed: onUndoButtonPressed,
             ),
             // Notes mode button.
@@ -115,22 +128,19 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
               icon: notesMode
                   ? const Icon(Icons.edit)
                   : const Icon(Icons.edit_outlined),
-              text:
-                  const Text("Заметки", textAlign: TextAlign.center),
+              text: const Text("Заметки", textAlign: TextAlign.center),
               onPressed: onNotesButtonPressed,
             ),
             // Restart button.
             IconUnderTextButton.build(
               icon: const Icon(Icons.restart_alt),
-              text: const Text("Начать\nсначала",
-                  textAlign: TextAlign.center),
+              text: const Text("Начать\nсначала", textAlign: TextAlign.center),
               onPressed: onRestartButtonPressed,
             ),
             // Clear cell button.
             IconUnderTextButton.build(
               icon: const Icon(Icons.clear_outlined),
-              text: const Text("Очистка",
-                  textAlign: TextAlign.center),
+              text: const Text("Очистка", textAlign: TextAlign.center),
               onPressed: onClearCellButtonPressed,
             ),
             // Hint button.
@@ -170,10 +180,12 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
   }
 
   onCellButtonPressed(int row, int col) {
+    print("cell button pressed");
     final cell =
         widget._fieldKeeper.fields[widget._sudokuFieldId]!.field[row][col];
     // Ignore clues.
     if (cell.type == FieldCellType.clue) {
+      print("attempted to select clue");
       return;
     }
     setState(() {

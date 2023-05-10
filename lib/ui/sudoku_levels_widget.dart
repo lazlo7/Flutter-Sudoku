@@ -52,7 +52,7 @@ class _SudokuLevelsWidgetState extends State<SudokuLevelsWidget> {
                                             : cell.value.toString(),
                                         style: TextStyle(
                                           color: cell.type == FieldCellType.clue
-                                              ? Colors.grey
+                                              ? Colors.blueGrey
                                               : Colors.black,
                                         ))));
                           }),
