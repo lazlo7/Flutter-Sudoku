@@ -22,7 +22,8 @@ class _SudokuLevelsWidgetState extends State<SudokuLevelsWidget> {
           itemCount: widget.fieldKeeper.fields.length,
           addAutomaticKeepAlives: true,
           itemBuilder: (context, index) {
-            var sudokuField = widget.fieldKeeper.getField(index);
+            var sudokuId = widget.fieldKeeper.fields.keys.elementAt(index);
+            var sudokuField = widget.fieldKeeper.fields[sudokuId];
 
             return Container(
                 decoration: BoxDecoration(border: Border.all(width: 1)),
@@ -35,7 +36,7 @@ class _SudokuLevelsWidgetState extends State<SudokuLevelsWidget> {
                     children: List.generate(81, (index) {
                       final row = index ~/ 9;
                       final col = index % 9;
-                      final cell = sudokuField.field[row][col];
+                      final cell = sudokuField!.field[row][col];
 
                       return Container(
                           decoration:

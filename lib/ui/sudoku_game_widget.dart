@@ -143,6 +143,8 @@ class _SudokuPlayableAreaWidgetState extends State<SudokuPlayableAreaWidget> {
           });
         } 
       });
+    } else {
+      
     }
   }
 }

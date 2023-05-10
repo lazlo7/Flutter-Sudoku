@@ -1,31 +1,30 @@
-import 'dart:collection';
-
 import 'package:flutter_sudoku/model/field_cell_type.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 import 'field_cell.dart';
 import 'field_coords.dart';
 import 'field_move.dart';
 
+part 'sudoku_field.g.dart';
+
+@JsonSerializable(explicitToJson: true)
 class SudokuField {
   static const FieldCoords invalidCoords = FieldCoords(-1, -1);
 
   // Current playable field.
-  final List<List<FieldCell>> _field;
+  final List<List<FieldCell>> field;
   // The solution to this field.
-  final List<List<int>> _solution;
+  final List<List<int>> solution;
   // Maps a cell to it's notes (possible values left by the player).
-  final Map<FieldCoords, List<int>> _notes = HashMap();
+  final Map<FieldCoords, List<int>> _notes = {};
 
-  SudokuField(this._field, this._solution);
-
-  /// Returns the field as a list of lists of integers.
-  List<List<FieldCell>> get field => _field;
-
-  /// Returns the solution field as a list of lists of integers.
-  List<List<int>> get solution => _solution;
+  SudokuField(this.field, this.solution);
 
   /// Returns the notes of this field.
   Map<FieldCoords, List<int>> get notes => _notes;
+
+  factory SudokuField.fromJson(Map<String, dynamic> json) => _$SudokuFieldFromJson(json);
+  Map<String, dynamic> toJson() => _$SudokuFieldToJson(this);
 
   /// Returns invalidCoords constant if the move is valid,
   /// otherwise returns the coords of the first found cell, that conflicts with the move.
@@ -33,15 +32,15 @@ class SudokuField {
   /// and move's position is not occupied by a non-empty cell value.
   FieldCoords isValidMove(FieldMove move) {
     // Check if the move's value is present in the same row
-    for (int col = 0; col < _field.length; col++) {
-      if (_field[move.coords.row][col].value == move.value) {
+    for (int col = 0; col < field.length; col++) {
+      if (field[move.coords.row][col].value == move.value) {
         return FieldCoords(move.coords.row, col); 
       }
     }
 
     // Check if the move's value is present in the same column
-    for (int row = 0; row < _field.length; row++) {
-      if (_field[row][move.coords.col].value == move.value) {
+    for (int row = 0; row < field.length; row++) {
+      if (field[row][move.coords.col].value == move.value) {
         return FieldCoords(row, move.coords.col);
       }
     }
@@ -51,7 +50,7 @@ class SudokuField {
     int squareCol = move.coords.col ~/ 3;
     for (int row = squareRow * 3; row < squareRow * 3 + 3; row++) {
       for (int col = squareCol * 3; col < squareCol * 3 + 3; col++) {
-        if (_field[row][col].value == move.value) {
+        if (field[row][col].value == move.value) {
           return FieldCoords(row, col);
         }
       }
@@ -62,9 +61,9 @@ class SudokuField {
 
   /// Returns true if the sudoku field is solved (i. e. the board is full of non-empty cell values).
   bool isSolved() {
-    for (int row = 0; row < _field.length; row++) {
-      for (int col = 0; col < _field.length; col++) {
-        if (_field[row][col].type == FieldCellType.empty) {
+    for (int row = 0; row < field.length; row++) {
+      for (int col = 0; col < field.length; col++) {
+        if (field[row][col].type == FieldCellType.empty) {
           return false;
         }
       }
@@ -79,7 +78,7 @@ class SudokuField {
   FieldCoords setCell(FieldMove move) {
     FieldCoords conflictingCoords = isValidMove(move);
     if (conflictingCoords == SudokuField.invalidCoords) {
-      _field[move.coords.row][move.coords.col] = FieldCell(value: move.value, type: FieldCellType.user);
+      field[move.coords.row][move.coords.col] = FieldCell(value: move.value, type: FieldCellType.user);
     }
     return conflictingCoords;
   }
@@ -87,8 +86,8 @@ class SudokuField {
   /// Clears the cell at the given row and column.
   /// Returns true if the cell at the provided coords is not empty, false otherwise.
   bool clearCell(FieldCoords coords) {
-    if (_field[coords.row][coords.col].type != FieldCellType.empty) {
-      _field[coords.row][coords.col].type = FieldCellType.empty;
+    if (field[coords.row][coords.col].type != FieldCellType.empty) {
+      field[coords.row][coords.col].type = FieldCellType.empty;
       return true;
     }
     return false;

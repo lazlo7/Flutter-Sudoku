@@ -3,6 +3,7 @@ import 'package:flutter_sudoku/model/sudoku_field_keeper.dart';
 import 'package:flutter_sudoku/ui/sudoku_menu_widget.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(App());
 }
 
