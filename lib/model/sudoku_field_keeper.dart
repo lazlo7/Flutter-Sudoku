@@ -31,9 +31,11 @@ class SudokuFieldKeeper {
     });
   }
 
-  Future<void> addField(SudokuField field) {
-    fields[_getNextId().toString()] = field;
-    return saveFields();
+  String addField(SudokuField field) {
+    final id = _getNextId();
+    fields[_getNextId()] = field;
+    saveFields();
+    return id;
   }
 
   SudokuField? getField(String id) {

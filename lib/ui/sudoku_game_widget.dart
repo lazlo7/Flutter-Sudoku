@@ -7,10 +7,10 @@ import '../model/field_move.dart';
 import '../model/sudoku_field.dart';
 
 class SudokuGameWidget extends StatefulWidget {
-  final SudokuField _sudokuField;
+  final String _sudokuFieldId;
   final SudokuFieldKeeper _fieldKeeper;
 
-  const SudokuGameWidget(this._sudokuField, this._fieldKeeper, {super.key});
+  const SudokuGameWidget(this._sudokuFieldId, this._fieldKeeper, {super.key});
 
   @override
   State<StatefulWidget> createState() => _SudokuGameWidgetState();
@@ -36,7 +36,7 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
               children: List.generate(81, (index) {
                 var row = index ~/ 9;
                 var col = index % 9;
-                var cell = widget._sudokuField.field[row][col];
+                var cell = widget._fieldKeeper.fields[widget._sudokuFieldId]!.field[row][col];
 
                 var coords = FieldCoords(row, col);
                 BoxBorder cellBorder;
@@ -64,8 +64,9 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
                         cell.type == FieldCellType.empty 
                             ? ""
                             : cell.value.toString(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
+                          color: cell.type == FieldCellType.clue ? Colors.grey : Colors.black,
                         ),
                       )),
                 );
@@ -133,7 +134,7 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
 
     setState(() {
       selectedCellCoords = SudokuField.invalidCoords;
-      conflictingCellCoords = widget._sudokuField.setCell(move);
+      conflictingCellCoords = widget._fieldKeeper.fields[widget._sudokuFieldId]!.setCell(move);
     });
 
     if (conflictingCellCoords != SudokuField.invalidCoords) {

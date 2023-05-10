@@ -60,8 +60,7 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => SudokuLevelsWidget(
-                            fieldKeeper: widget.fieldKeeper))),
+                        builder: (context) => SudokuLevelsWidget(widget.fieldKeeper))),
                 icon: Icons.more_horiz,
                 label: "Уровни"),
             buildLevelButton(
@@ -100,11 +99,11 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
 
   void onPlayButtonPressed() {
     final newField = SudokuGenerator.generateField(sudokuDifficulty.minClues, sudokuDifficulty.maxClues);
-    widget.fieldKeeper.addField(newField);
+    final id = widget.fieldKeeper.addField(newField);
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => SudokuGameWidget(newField, widget.fieldKeeper)));
+            builder: (context) => SudokuGameWidget(id, widget.fieldKeeper)));
   }
 
   void onCreateLevelButtonPressed() {}
