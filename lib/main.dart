@@ -4,13 +4,14 @@ import 'package:flutter_sudoku/ui/sudoku_menu_widget.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(App());
+  SudokuFieldKeeper fieldKeeper = SudokuFieldKeeper();
+  runApp(App(fieldKeeper));
 }
 
 class App extends StatelessWidget {
-  App({super.key});
+  final SudokuFieldKeeper fieldKeeper;
 
-  final SudokuFieldKeeper fieldKeeper = SudokuFieldKeeper();
+  const App(this.fieldKeeper, {super.key});
 
   @override
   Widget build(BuildContext context) {

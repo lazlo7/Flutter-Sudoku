@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sudoku/model/field_cell_type.dart';
 import 'package:flutter_sudoku/model/field_coords.dart';
+import 'package:flutter_sudoku/model/sudoku_field_keeper.dart';
 
 import '../model/field_move.dart';
 import '../model/sudoku_field.dart';
 
-class SudokuPlayableAreaWidget extends StatefulWidget {
+class SudokuGameWidget extends StatefulWidget {
   final SudokuField _sudokuField;
+  final SudokuFieldKeeper _fieldKeeper;
 
-  const SudokuPlayableAreaWidget(this._sudokuField, {super.key});
+  const SudokuGameWidget(this._sudokuField, this._fieldKeeper, {super.key});
 
   @override
-  State<StatefulWidget> createState() => _SudokuPlayableAreaWidgetState();
+  State<StatefulWidget> createState() => _SudokuGameWidgetState();
 }
 
-class _SudokuPlayableAreaWidgetState extends State<SudokuPlayableAreaWidget> {
+class _SudokuGameWidgetState extends State<SudokuGameWidget> {
   Future<void>? conflictingRemoveFuture;
   FieldCoords selectedCellCoords = SudokuField.invalidCoords;
   FieldCoords conflictingCellCoords = SudokuField.invalidCoords;
@@ -144,7 +146,7 @@ class _SudokuPlayableAreaWidgetState extends State<SudokuPlayableAreaWidget> {
         } 
       });
     } else {
-      
+      widget._fieldKeeper.saveFields();
     }
   }
 }

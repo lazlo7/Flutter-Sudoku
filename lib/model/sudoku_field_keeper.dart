@@ -23,6 +23,7 @@ class SudokuFieldKeeper {
       file.exists().then((exists) {
         if (exists) {
           file.readAsString().then((json) {
+            print("read sudokus json: $json");
             fields = SudokuFieldKeeper._fieldsFromJson(json);
           });
         }
@@ -32,27 +33,27 @@ class SudokuFieldKeeper {
 
   Future<void> addField(SudokuField field) {
     fields[_getNextId().toString()] = field;
-    return _saveFields();
+    return saveFields();
   }
 
-  SudokuField? getField(int id) {
-    return fields[id.toString()];
+  SudokuField? getField(String id) {
+    return fields[id];
   }
 
-  Future<void> removeField(int id) {
-    fields.remove(id.toString());
-    return _saveFields();
+  Future<void> removeField(String id) {
+    fields.remove(id);
+    return saveFields();
   }
 
-  int _getNextId() {
+  String _getNextId() {
     int id = 0;
-    while (fields.containsKey(id)) {
+    while (fields.containsKey(id.toString())) {
       id++;
     }
-    return id;
+    return id.toString();
   }
 
-  Future<void> _saveFields() {
+  Future<void> saveFields() {
     print("saved fields");
     return _sudokusPath.then((file) {
       file.writeAsString(SudokuFieldKeeper._fieldsToJson(fields));

@@ -99,14 +99,12 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
   }
 
   void onPlayButtonPressed() {
-    print("started generating new field");
     final newField = SudokuGenerator.generateField(sudokuDifficulty.minClues, sudokuDifficulty.maxClues);
-    print("finished generating new field");
     widget.fieldKeeper.addField(newField);
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => SudokuPlayableAreaWidget(newField)));
+            builder: (context) => SudokuGameWidget(newField, widget.fieldKeeper)));
   }
 
   void onCreateLevelButtonPressed() {}
