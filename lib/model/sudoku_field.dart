@@ -23,7 +23,8 @@ class SudokuField {
   /// Returns the notes of this field.
   Map<FieldCoords, List<int>> get notes => _notes;
 
-  factory SudokuField.fromJson(Map<String, dynamic> json) => _$SudokuFieldFromJson(json);
+  factory SudokuField.fromJson(Map<String, dynamic> json) =>
+      _$SudokuFieldFromJson(json);
   Map<String, dynamic> toJson() => _$SudokuFieldToJson(this);
 
   /// Returns invalidCoords constant if the move is valid,
@@ -33,14 +34,16 @@ class SudokuField {
   FieldCoords isValidMove(FieldMove move) {
     // Check if the move's value is present in the same row
     for (int col = 0; col < field.length; col++) {
-      if (field[move.coords.row][col].value == move.value) {
-        return FieldCoords(move.coords.row, col); 
+      if (field[move.coords.row][col].type == FieldCellType.clue &&
+          field[move.coords.row][col].value == move.value) {
+        return FieldCoords(move.coords.row, col);
       }
     }
 
     // Check if the move's value is present in the same column
     for (int row = 0; row < field.length; row++) {
-      if (field[row][move.coords.col].value == move.value) {
+      if (field[row][move.coords.col].type == FieldCellType.clue &&
+          field[row][move.coords.col].value == move.value) {
         return FieldCoords(row, move.coords.col);
       }
     }
@@ -50,7 +53,8 @@ class SudokuField {
     int squareCol = move.coords.col ~/ 3;
     for (int row = squareRow * 3; row < squareRow * 3 + 3; row++) {
       for (int col = squareCol * 3; col < squareCol * 3 + 3; col++) {
-        if (field[row][col].value == move.value) {
+        if (field[row][col].type == FieldCellType.clue &&
+            field[row][col].value == move.value) {
           return FieldCoords(row, col);
         }
       }
@@ -78,7 +82,8 @@ class SudokuField {
   FieldCoords setCell(FieldMove move) {
     FieldCoords conflictingCoords = isValidMove(move);
     if (conflictingCoords == SudokuField.invalidCoords) {
-      field[move.coords.row][move.coords.col] = FieldCell(value: move.value, type: FieldCellType.user);
+      field[move.coords.row][move.coords.col] =
+          FieldCell(value: move.value, type: FieldCellType.user);
     }
     return conflictingCoords;
   }

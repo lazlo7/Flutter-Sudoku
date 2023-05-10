@@ -41,7 +41,7 @@ class _SudokuLevelsWidgetState extends State<SudokuLevelsWidget> {
                             final row = index ~/ 9;
                             final col = index % 9;
                             final cell = sudokuField.field[row][col];
-                      
+
                             return Container(
                                 decoration:
                                     BoxDecoration(border: Border.all(width: 1)),
@@ -49,17 +49,29 @@ class _SudokuLevelsWidgetState extends State<SudokuLevelsWidget> {
                                     child: Text(
                                         cell.type == FieldCellType.empty
                                             ? ""
-                                            : cell.value.toString())));
+                                            : cell.value.toString(),
+                                        style: TextStyle(
+                                          color: cell.type == FieldCellType.clue
+                                              ? Colors.grey
+                                              : Colors.black,
+                                        ))));
                           }),
                         ),
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => SudokuGameWidget(sudokuId, widget._fieldKeeper)));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SudokuGameWidget(
+                                      sudokuId, widget._fieldKeeper)));
                         },
                       ),
-                      TextButton.icon(icon: const Icon(Icons.delete), label: const Text("Удалить"), onPressed: () {
-                        widget._fieldKeeper.removeField(sudokuId);
-                        setState(() {});
-                      })
+                      TextButton.icon(
+                          icon: const Icon(Icons.delete),
+                          label: const Text("Удалить"),
+                          onPressed: () {
+                            widget._fieldKeeper.removeField(sudokuId);
+                            setState(() {});
+                          })
                     ],
                   ),
                 ));

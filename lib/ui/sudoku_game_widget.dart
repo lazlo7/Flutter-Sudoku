@@ -36,7 +36,8 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
               children: List.generate(81, (index) {
                 var row = index ~/ 9;
                 var col = index % 9;
-                var cell = widget._fieldKeeper.fields[widget._sudokuFieldId]!.field[row][col];
+                var cell = widget._fieldKeeper.fields[widget._sudokuFieldId]!
+                    .field[row][col];
 
                 var coords = FieldCoords(row, col);
                 BoxBorder cellBorder;
@@ -61,12 +62,14 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
                         }
                       },
                       child: Text(
-                        cell.type == FieldCellType.empty 
+                        cell.type == FieldCellType.empty
                             ? ""
                             : cell.value.toString(),
                         style: TextStyle(
                           fontSize: 20,
-                          color: cell.type == FieldCellType.clue ? Colors.grey : Colors.black,
+                          color: cell.type == FieldCellType.clue
+                              ? Colors.grey
+                              : Colors.black,
                         ),
                       )),
                 );
@@ -124,7 +127,20 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
     );
   }
 
+  onCellButtonPressed(int row, int col) {
+    final cell = widget._fieldKeeper.fields[widget._sudokuFieldId]!
+        .field[row][col];
+    // Ignore clues.
+    if (cell.type == FieldCellType.clue) {
+      return;
+    }
+    setState(() {
+      selectedCellCoords = FieldCoords(row, col);
+    });
+  } 
+
   void onNumberButtonPressed(int index) {
+    // Can't change the cell if no cell is selected.
     if (selectedCellCoords == SudokuField.invalidCoords) {
       return;
     }
@@ -134,7 +150,8 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
 
     setState(() {
       selectedCellCoords = SudokuField.invalidCoords;
-      conflictingCellCoords = widget._fieldKeeper.fields[widget._sudokuFieldId]!.setCell(move);
+      conflictingCellCoords =
+          widget._fieldKeeper.fields[widget._sudokuFieldId]!.setCell(move);
     });
 
     if (conflictingCellCoords != SudokuField.invalidCoords) {
@@ -144,7 +161,7 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
           setState(() {
             conflictingCellCoords = SudokuField.invalidCoords;
           });
-        } 
+        }
       });
     } else {
       widget._fieldKeeper.saveFields();
