@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:math';
 
 import 'package:flutter_sudoku/model/field_cell.dart';
@@ -40,79 +41,27 @@ class SudokuGenerator {
 
   /// Returns a random generated valid sudoku field with at least [clues] number of clues.
   static SudokuField generateField(int minClues, int maxClues) {
-    final field = List<List<FieldCell>>.generate(
-        9, (i) => List<FieldCell>.generate(9, (j) => FieldCell()));
-
-    while (true) {
-      print("[sudoku_generator:generateField] trying out new shuffle");
-      var values = {for (var s in _squares) s: _digits};
-      final shuffledSquares = _squares.toList()..shuffle();
-      for (var s in shuffledSquares) {
-        if (!_assign(
-            values, s, values[s]![_random.nextInt(values[s]!.length)])) {
-          break;
-        }
-
-        List<String> ds = [];
-        for (String s in _squares) {
-          if (values[s]!.length == 1) {
-            ds.add(values[s]!);
-          }
-        }
-
-        if (ds.length >= minClues && ds.length <= maxClues && ds.toSet().length >= 8) {
-          // Allow only fields with one solution.
-          final grid = _squares
-              .map((s) => values[s]!.length == 1 ? values[s]! : '.')
-              .join('');
-          final solutions = _solve(grid);
-          if (solutions.length != 1) {
-            break;
-          }
-
-          // Fill the field with clues.
-          final cluesField = _decodeGrid(grid);
-          for (int i = 0; i < 9; ++i) {
-            for (int j = 0; j < 9; ++j) {
-              if (cluesField[i][j] != FieldCell.emptyValue) {
-                field[i][j].type = FieldCellType.clue;
-                field[i][j].value = cluesField[i][j];
-              }
-            }
-          }
-
-          // Compile solution from {squares: digits} map.
-          final solutionMap = solutions[0];
-          final solution = List<List<int>>.generate(
-              9, (i) => List<int>.generate(9, (j) => 0));
-          
-          // Verify that all values in solutionMap are single digits.
-          var manyDigits = false;
-          
-          for (String s in _squares) {
-            final i = _rows.indexOf(s[0]);
-            final j = _cols.indexOf(s[1]);
-
-            final digit = solutionMap[s]!;
-            solution[i][j] = int.parse(digit);
-            if (digit.length > 1) {
-              manyDigits = true;
-              break;
-            }
-          }
-
-          if (manyDigits) {
-            break;
-          }
-
-          print("[sudoku_generator:generateField] generated new field!");
-          print("[sudoku_generator:generateField] field: $field");
-          print("[sudoku_generator:generateField] solution: $solution");
-
-          return SudokuField(field, solution);
-        }
-      }
+    // TODO: Actually generate the sudoku.
+    final solution = [[1, 2, 3, 4, 5, 6, 7, 8, 9],
+                      [4, 5, 6, 7, 8, 9, 1, 2, 3],
+                      [7, 8, 9, 1, 2, 3, 4, 5, 6],
+                      [2, 3, 4, 5, 6, 7, 8, 9, 1],
+                      [5, 6, 7, 8, 9, 1, 2, 3, 4],
+                      [8, 9, 1, 2, 3, 4, 5, 6, 7],
+                      [3, 4, 5, 6, 7, 8, 9, 1, 2],
+                      [6, 7, 8, 9, 1, 2, 3, 4, 5],
+                      [9, 1, 2, 3, 4, 5, 6, 7, 8]];
+    
+    final field = solution.map((row) => row.map((cell) => FieldCell(value: cell, type: FieldCellType.clue)).toList()).toList();
+    // Remove some of the clues from field.
+    final clues = _random.nextInt(maxClues - minClues) + minClues;
+    for (int i = 0; i < clues; i++) {
+      final row = _random.nextInt(9);
+      final col = _random.nextInt(9);
+      field[row][col] = FieldCell(value: field[row][col].value, type: FieldCellType.empty);
     }
+
+    return SudokuField(field, solution);
   }
 
   /// Returns true iff the [field] is valid (i. e. it has only one solution).
