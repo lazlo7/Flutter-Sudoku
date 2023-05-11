@@ -85,10 +85,10 @@ class SudokuField {
     return conflictingCoords;
   }
 
-  /// Clears the cell at the given row and column.
-  /// Returns true if the cell at the provided coords is not empty, false otherwise.
+  /// Clears a user cell at the given row and column.
+  /// Returns true if the cell at the provided coords is not a clue, false otherwise.
   bool clearCell(FieldCoords coords) {
-    if (field[coords.row][coords.col].type != FieldCellType.empty) {
+    if (field[coords.row][coords.col].type == FieldCellType.user) {
       field[coords.row][coords.col].type = FieldCellType.empty;
       return true;
     }

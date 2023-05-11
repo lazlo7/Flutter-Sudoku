@@ -239,8 +239,21 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
     });
   }
 
-  void onRestartButtonPressed() {}
+  void onRestartButtonPressed() {
+    setState(() {
+      var field = widget._fieldKeeper.fields[widget._sudokuFieldId]!;
+      for (int i = 0; i < 81; ++i) {
+        field.clearCell(FieldCoords(i ~/ 9, i % 9));
+      }
+    });
+  }
 
-  void onClearCellButtonPressed() {}
+  void onClearCellButtonPressed() {
+    setState(() {
+      widget._fieldKeeper.fields[widget._sudokuFieldId]!
+          .clearCell(selectedCellCoords);
+    });
+  }
+
   void onHintButtonPressed() {}
 }
