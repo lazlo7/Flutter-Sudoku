@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:flutter_sudoku/model/field_cell_type.dart';
+import 'package:flutter_sudoku/model/sudoku_user_format_parser.dart';
 import 'package:flutter_sudoku/ui/sudoku_game_widget.dart';
 
 import '../model/sudoku_field_keeper.dart';
@@ -65,17 +69,36 @@ class _SudokuLevelsWidgetState extends State<SudokuLevelsWidget> {
                                       sudokuId, widget._fieldKeeper)));
                         },
                       ),
-                      TextButton.icon(
-                          icon: const Icon(Icons.delete),
-                          label: const Text("Удалить"),
-                          onPressed: () {
-                            widget._fieldKeeper.removeField(sudokuId);
-                            setState(() {});
-                          })
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          TextButton.icon(
+                              icon: const Icon(Icons.delete),
+                              label: const Text("Удалить"),
+                              onPressed: () {
+                                setState(() =>
+                                    widget._fieldKeeper.removeField(sudokuId));
+                              }),
+                          TextButton.icon(
+                            icon: const Icon(Icons.file_upload_outlined),
+                            label: const Text("Экспорт"),
+                            onPressed: () => exportFieldToFile(sudokuId),
+                          )
+                        ],
+                      )
                     ],
                   ),
                 ));
           }),
     );
+  }
+
+  void exportFieldToFile(String sudokuId) async {
+    final field = widget._fieldKeeper.fields[sudokuId]!;
+    final encodedField = SudokuUserFormatParser.encode(field);
+    await FlutterFileDialog.saveFile(
+        params: SaveFileDialogParams(
+            data: Uint8List.fromList(encodedField.codeUnits),
+            fileName: "sudoku-$sudokuId.txt"));
   }
 }

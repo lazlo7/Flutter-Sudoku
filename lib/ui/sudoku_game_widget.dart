@@ -231,7 +231,9 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
     }
   }
 
-  void onUndoButtonPressed() {}
+  void onUndoButtonPressed() {
+    // TODO: Imeplement later.
+  }
 
   void onNotesButtonPressed() {
     setState(() {
