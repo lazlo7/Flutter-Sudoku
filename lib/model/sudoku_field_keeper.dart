@@ -18,12 +18,11 @@ class SudokuFieldKeeper {
   Map<String, SudokuField> fields = {};
 
   SudokuFieldKeeper() {
-    // Initialize fields from file. 
+    // Initialize fields from file.
     _sudokusPath.then((file) {
       file.exists().then((exists) {
         if (exists) {
           file.readAsString().then((json) {
-            print("read sudokus json: $json");
             fields = SudokuFieldKeeper._fieldsFromJson(json);
           });
         }
@@ -56,10 +55,9 @@ class SudokuFieldKeeper {
   }
 
   Future<void> saveFields() {
-    print("saved fields");
     return _sudokusPath.then((file) {
       file.writeAsString(SudokuFieldKeeper._fieldsToJson(fields));
-    }); 
+    });
   }
 
   /// Reads fields from json content.
@@ -80,4 +78,4 @@ class SudokuFieldKeeper {
     });
     return jsonEncode(jsonMap);
   }
-} 
+}

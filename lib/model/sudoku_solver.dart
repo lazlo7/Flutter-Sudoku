@@ -9,7 +9,6 @@ class SudokuSolver {
     List<List<int>> solution = [];
     int solutionsFound = 0;
 
-    print("Started solving");
     void search(_SudokuProblem problem) {
       final start = _NodeState(problem.original);
       if (problem.isSolved(start.state)) {
@@ -23,9 +22,7 @@ class SudokuSolver {
       while (stack.isNotEmpty) {
         final node = stack.removeLast();
 
-        print("testing new node");
         if (problem.isSolved(node.state)) {
-          print("Found solution");
           ++solutionsFound;
           if (solutionsFound > 1) {
             return;
