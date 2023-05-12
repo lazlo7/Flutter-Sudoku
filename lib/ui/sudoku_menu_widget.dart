@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:flutter_sudoku/model/sudoku_difficulty.dart';
 import 'package:flutter_sudoku/model/sudoku_field_keeper.dart';
 import 'package:flutter_sudoku/model/sudoku_generator.dart';
+import 'package:flutter_sudoku/model/sudoku_user_format_parser.dart';
 import 'package:flutter_sudoku/ui/sudoku_levels_widget.dart';
 import 'package:flutter_sudoku/ui/sudoku_game_widget.dart';
 
 import '../model/icon_undertext_button.dart';
+import '../model/sudoku_field.dart';
 
 class SudokuMenuWidget extends StatefulWidget {
   const SudokuMenuWidget({required this.fieldKeeper, super.key});
@@ -102,5 +107,48 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
   }
 
   void onCreateLevelButtonPressed() {}
-  void onImportLevelButtonPressed() {}
+  void onImportLevelButtonPressed() async {
+    final scaffold = ScaffoldMessenger.of(context);
+    String? pathResult;
+
+    try {
+      pathResult = await FlutterFileDialog.pickFile(
+          params: const OpenFileDialogParams());
+    } catch (e) {
+      scaffold.showSnackBar(
+          const SnackBar(content: Text("Не удалось найти файл!")));
+    }
+
+    // Picker cancelled.
+    if (pathResult == null) return;
+
+    String encodedField;
+    try {
+      encodedField = await File(pathResult).readAsString();
+    } catch (e) {
+      scaffold.showSnackBar(
+          const SnackBar(content: Text("Не удалось прочитать файл!")));
+      return;
+    }
+
+    final clues = SudokuUserFormatParser.decode(encodedField);
+    if (clues == null) {
+      scaffold.showSnackBar(const SnackBar(
+          content: Text("Не удалось распознать судоку в файле!")));
+      return;
+    }
+
+    final solution = SudokuGenerator.solveField(clues);
+    if (solution == null) {
+      scaffold.showSnackBar(const SnackBar(
+          content:
+              Text("Не удалось найти уникальное решение для судоку в файле!")));
+      return;
+    }
+
+    final field = SudokuField(clues, solution);
+    scaffold.showSnackBar(const SnackBar(
+        content:
+            Text("Импортировано новое судоку! Перейдите в меню уровней.")));
+  }
 }

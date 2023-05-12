@@ -111,9 +111,7 @@ class _SudokuLevelsWidgetState extends State<SudokuLevelsWidget> {
     }
 
     // Picker cancelled.
-    if (pathResult == null) {
-      return;
-    }
+    if (pathResult == null) return;
 
     scaffold.showSnackBar(const SnackBar(
       content: Text("Судоку экспортировано!"),

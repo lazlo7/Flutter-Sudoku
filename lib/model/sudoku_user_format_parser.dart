@@ -10,7 +10,8 @@ class SudokuUserFormatParser {
     var result = "";
     for (var row in field.field) {
       for (var cell in row) {
-        result += "${cell.type == FieldCellType.empty ? FieldCell.emptyValue : cell.value} ";
+        result +=
+            "${cell.type == FieldCellType.empty ? FieldCell.emptyValue : cell.value} ";
       }
       result += "\n";
     }
@@ -19,16 +20,21 @@ class SudokuUserFormatParser {
 
   /// Decodes a sudoku field from user-readable format string.
   /// Returns null on error.
-  static List<List<int>>? decode(String encodedField) {
+  static List<List<FieldCell>>? decode(String encodedField) {
     var lines = encodedField.split("\n");
-    var field = List.generate(9, (index) => List.generate(9, (index) => 0));
+    var field =
+        List.generate(9, (index) => List.generate(9, (index) => FieldCell()));
     for (var i = 0; i < 9; i++) {
       var line = lines[i];
       var cells = line.split(" ");
       for (var j = 0; j < 9; j++) {
         var cell = cells[j];
         var value = int.parse(cell);
-        field[i][j] = value;
+        field[i][j] = FieldCell(
+            value: value,
+            type: value == FieldCell.emptyValue
+                ? FieldCellType.empty
+                : FieldCellType.clue);
       }
     }
     return field;

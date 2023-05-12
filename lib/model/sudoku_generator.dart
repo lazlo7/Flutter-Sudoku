@@ -68,6 +68,13 @@ class SudokuGenerator {
     return _isGridValid(_encodeGrid(field));
   }
 
+  /// Solve a sudoku field.
+  /// Returns null if the field is invalid or has multiple solutions.
+  static List<List<int>>? solveField(List<List<FieldCell>> field) {
+    // TODO: Actually implement.
+    return null;
+  }
+
   // Cross product of elements in A and elements in B.
   static List<String> _cross(String A, String B) {
     List<String> result = [];
