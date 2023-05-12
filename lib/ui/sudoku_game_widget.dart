@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sudoku/model/field_cell.dart';
 import 'package:flutter_sudoku/model/field_cell_type.dart';
 import 'package:flutter_sudoku/model/field_coords.dart';
 import 'package:flutter_sudoku/ui/icon_undertext_button.dart';
@@ -21,6 +22,7 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
   bool notesMode = false;
   FieldCoords selectedCellCoords = SudokuField.invalidCoords;
   FieldCoords conflictingCellCoords = SudokuField.invalidCoords;
+  List<FieldMove> history = [];
 
   @override
   Widget build(BuildContext context) {
@@ -197,22 +199,29 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
       return;
     }
 
+    final sudokuField = widget._fieldKeeper.fields[widget._sudokuFieldId]!;
+
     if (notesMode) {
       setState(() {
-        widget._fieldKeeper.fields[widget._sudokuFieldId]!.toggleNote(FieldMove(
+        sudokuField.toggleNote(FieldMove(
             FieldCoords(selectedCellCoords.row, selectedCellCoords.col),
             index + 1));
       });
       return;
     }
 
-    var move = FieldMove(
-        FieldCoords(selectedCellCoords.row, selectedCellCoords.col), index + 1);
+    final move = FieldMove(selectedCellCoords, index + 1);
+    final cellBefore =
+        sudokuField.field[selectedCellCoords.row][selectedCellCoords.col];
+    final moveBefore = FieldMove(
+        selectedCellCoords,
+        cellBefore.type == FieldCellType.empty
+            ? FieldCell.emptyValue
+            : cellBefore.value);
 
     setState(() {
       selectedCellCoords = SudokuField.invalidCoords;
-      conflictingCellCoords =
-          widget._fieldKeeper.fields[widget._sudokuFieldId]!.setCell(move);
+      conflictingCellCoords = sudokuField.setCell(move);
     });
 
     if (conflictingCellCoords != SudokuField.invalidCoords) {
@@ -225,12 +234,21 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
         }
       });
     } else {
+      history.add(moveBefore);
       widget._fieldKeeper.saveFields();
     }
   }
 
   void onUndoButtonPressed() {
-    // TODO: Imeplement later.
+    if (history.isEmpty) {
+      return;
+    }
+
+    final move = history.removeLast();
+    final field = widget._fieldKeeper.fields[widget._sudokuFieldId]!;
+    setState(() {
+      field.setCell(move);
+    });
   }
 
   void onNotesButtonPressed() {
@@ -252,9 +270,24 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
     if (selectedCellCoords == SudokuField.invalidCoords) {
       return;
     }
+
+    final sudokuField = widget._fieldKeeper.fields[widget._sudokuFieldId]!;
+    if (sudokuField
+            .field[selectedCellCoords.row][selectedCellCoords.col].type ==
+        FieldCellType.empty) {
+      return;
+    }
+
+    final cellBefore =
+        sudokuField.field[selectedCellCoords.row][selectedCellCoords.col];
+    history.add(FieldMove(
+        selectedCellCoords,
+        cellBefore.type == FieldCellType.empty
+            ? FieldCell.emptyValue
+            : cellBefore.value));
+
     setState(() {
-      widget._fieldKeeper.fields[widget._sudokuFieldId]!
-          .clearCell(selectedCellCoords);
+      sudokuField.clearCell(selectedCellCoords);
     });
   }
 

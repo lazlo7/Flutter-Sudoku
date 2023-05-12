@@ -154,6 +154,8 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
     }
 
     final field = SudokuField(clues, solution);
+    widget.fieldKeeper.addField(field);
+    
     scaffold.showSnackBar(const SnackBar(
         content:
             Text("Импортировано новое судоку! Перейдите в меню уровней.")));

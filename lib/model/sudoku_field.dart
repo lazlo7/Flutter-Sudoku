@@ -79,8 +79,11 @@ class SudokuField {
   FieldCoords setCell(FieldMove move) {
     FieldCoords conflictingCoords = isValidMove(move);
     if (conflictingCoords == SudokuField.invalidCoords) {
-      field[move.coords.row][move.coords.col] =
-          FieldCell(value: move.value, type: FieldCellType.user);
+      field[move.coords.row][move.coords.col] = FieldCell(
+          value: move.value,
+          type: move.value == FieldCell.emptyValue
+              ? FieldCellType.empty
+              : FieldCellType.user);
     }
     return conflictingCoords;
   }
