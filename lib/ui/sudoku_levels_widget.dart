@@ -96,9 +96,27 @@ class _SudokuLevelsWidgetState extends State<SudokuLevelsWidget> {
   void exportFieldToFile(String sudokuId) async {
     final field = widget._fieldKeeper.fields[sudokuId]!;
     final encodedField = SudokuUserFormatParser.encode(field);
-    await FlutterFileDialog.saveFile(
-        params: SaveFileDialogParams(
-            data: Uint8List.fromList(encodedField.codeUnits),
-            fileName: "sudoku-$sudokuId.txt"));
+    final scaffold = ScaffoldMessenger.of(context);
+    String? pathResult;
+
+    try {
+      pathResult = await FlutterFileDialog.saveFile(
+          params: SaveFileDialogParams(
+              data: Uint8List.fromList(encodedField.codeUnits),
+              fileName: "sudoku-$sudokuId.txt"));
+    } catch (e) {
+      scaffold.showSnackBar(const SnackBar(
+        content: Text("Не удалось сохранить файл!"),
+      ));
+    }
+
+    // Picker cancelled.
+    if (pathResult == null) {
+      return;
+    }
+
+    scaffold.showSnackBar(const SnackBar(
+      content: Text("Судоку экспортировано!"),
+    ));
   }
 }
