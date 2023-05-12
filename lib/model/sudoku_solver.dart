@@ -3,10 +3,6 @@ import 'package:flutter_sudoku/model/field_cell_type.dart';
 import 'package:flutter_sudoku/model/field_coords.dart';
 
 class SudokuSolver {
-  /*
-  Based on: https://github.com/jderrickguarin/sudoku-uninformed-search/blob/master/main/Heuristics_Sudoku.py
-  */
-
   /// Tries to solve a sudoku [field] using DFS.
   /// Returns null if the field is invalid or has multiple solutions.
   static List<List<int>>? solve(List<List<int>> field) {
@@ -50,11 +46,14 @@ class SudokuSolver {
 
   /// Tries to solve a sudoku [field] using DFS.
   /// Returns null if the field is invalid or has multiple solutions.
-  static List<List<int>>? solveFieldCell(List<List<FieldCell>> field) => solve(field
-      .map((row) => row
-          .map((cell) => cell.type == FieldCellType.empty ? FieldCell.emptyValue : cell.value)
-          .toList())
-      .toList());
+  static List<List<int>>? solveFieldCell(List<List<FieldCell>> field) => solve(
+      field
+          .map((row) => row
+              .map((cell) => cell.type == FieldCellType.empty
+                  ? FieldCell.emptyValue
+                  : cell.value)
+              .toList())
+          .toList());
 }
 
 class _SudokuProblem {
@@ -174,8 +173,8 @@ class _SudokuProblem {
     options = filterQuad(options, state, coords.row, coords.col);
 
     for (final option in options) {
-      final newState = List.generate(_size,
-          (index) => List.generate(_size, (index) => state[index][index]));
+      final newState =
+          List.generate(_size, (i) => List.generate(_size, (j) => state[i][j]));
       newState[coords.row][coords.col] = option;
       yield newState;
     }
