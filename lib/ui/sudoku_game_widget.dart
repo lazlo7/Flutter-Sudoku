@@ -79,13 +79,7 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
                       style: TextButton.styleFrom(
                           splashFactory: NoSplash.splashFactory,
                           padding: const EdgeInsets.all(0)),
-                      onPressed: () {
-                        if (row != selectedCellCoords.row ||
-                            col != selectedCellCoords.col) {
-                          setState(
-                              () => selectedCellCoords = FieldCoords(row, col));
-                        }
-                      },
+                      onPressed: () => onCellButtonPressed(row, col),
                       child: cellText),
                 );
               }),
@@ -180,14 +174,18 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
   }
 
   onCellButtonPressed(int row, int col) {
-    print("cell button pressed");
-    final cell =
-        widget._fieldKeeper.fields[widget._sudokuFieldId]!.field[row][col];
-    // Ignore clues.
-    if (cell.type == FieldCellType.clue) {
-      print("attempted to select clue");
+    if (FieldCoords(row, col) == selectedCellCoords) {
       return;
     }
+
+    final cell =
+        widget._fieldKeeper.fields[widget._sudokuFieldId]!.field[row][col];
+
+    // Ignore clues.
+    if (cell.type == FieldCellType.clue) {
+      return;
+    }
+
     setState(() {
       selectedCellCoords = FieldCoords(row, col);
     });
