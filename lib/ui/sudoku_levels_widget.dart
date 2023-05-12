@@ -75,9 +75,9 @@ class _SudokuLevelsWidgetState extends State<SudokuLevelsWidget> {
                           TextButton.icon(
                               icon: const Icon(Icons.delete),
                               label: const Text("Удалить"),
-                              onPressed: () {
-                                setState(() =>
-                                    widget._fieldKeeper.removeField(sudokuId));
+                              onPressed: () async {
+                                await widget._fieldKeeper.removeField(sudokuId);
+                                setState(() {});
                               }),
                           TextButton.icon(
                             icon: const Icon(Icons.file_upload_outlined),
