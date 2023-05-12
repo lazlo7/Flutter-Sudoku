@@ -9,7 +9,7 @@ import 'package:flutter_sudoku/model/sudoku_user_format_parser.dart';
 import 'package:flutter_sudoku/ui/sudoku_levels_widget.dart';
 import 'package:flutter_sudoku/ui/sudoku_game_widget.dart';
 
-import '../model/icon_undertext_button.dart';
+import 'icon_undertext_button.dart';
 import '../model/sudoku_field.dart';
 
 class SudokuMenuWidget extends StatefulWidget {

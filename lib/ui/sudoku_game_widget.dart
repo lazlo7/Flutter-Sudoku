@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sudoku/model/field_cell_type.dart';
 import 'package:flutter_sudoku/model/field_coords.dart';
-import 'package:flutter_sudoku/model/icon_undertext_button.dart';
+import 'package:flutter_sudoku/ui/icon_undertext_button.dart';
 import 'package:flutter_sudoku/model/sudoku_field_keeper.dart';
 
 import '../model/field_move.dart';
