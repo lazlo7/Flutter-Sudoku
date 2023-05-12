@@ -4,8 +4,30 @@ import 'package:flutter_sudoku/model/field_coords.dart';
 
 class SudokuSolver {
   /// Tries to solve a sudoku [field] using DFS.
-  /// Returns null if the field is invalid or has multiple solutions.
+  /// Returns null if the field is invalid, unsolvable or has multiple solutions.
+  /// Note that it's been proven that there don't exist valid sudoku's
+  /// with less than 17 clues, so the function will immedately
+  /// return null.
   static List<List<int>>? solve(List<List<int>> field) {
+    // Check for number of clues first.
+    int clues = 0;
+    for (int i = 0; i < field.length; i++) {
+      for (int j = 0; j < field[i].length; j++) {
+        if (field[i][j] != FieldCell.emptyValue) {
+          ++clues;
+        }
+      }
+    }
+
+    if (clues < 17) {
+      return null;
+    }
+
+    // Check if the field is correct.
+    if (!isFieldCorrect(field)) {
+      return null;
+    }
+
     List<List<int>> solution = [];
     int solutionsFound = 0;
 
@@ -51,6 +73,69 @@ class SudokuSolver {
                   : cell.value)
               .toList())
           .toList());
+
+  /// Returns true if the [field] is correct
+  /// (i. e. has no duplicate numbers in rows, columns or 3x3 quadrants)
+  static bool isFieldCorrect(List<List<int>> field) {
+    // Simply check for correctness each cell.
+    for (int i = 0; i < field.length; i++) {
+      for (int j = 0; j < field[i].length; j++) {
+        final coords = FieldCoords(i, j);
+        if (!isFieldCellCorrect(field, coords)) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /// Returns true if the cell at [coords] in [field]
+  /// doesn't violate the sudoku rules.
+  static bool isFieldCellCorrect(List<List<int>> field, FieldCoords coords) {
+    final value = field[coords.row][coords.col];
+    if (value == FieldCell.emptyValue) {
+      return true;
+    }
+
+    // Check row.
+    for (int i = 0; i < field.length; i++) {
+      if (i == coords.col) {
+        continue;
+      }
+      if (field[coords.row][i] == value) {
+        return false;
+      }
+    }
+
+    // Check column.
+    for (int i = 0; i < field.length; i++) {
+      if (i == coords.row) {
+        continue;
+      }
+      if (field[i][coords.col] == value) {
+        return false;
+      }
+    }
+
+    // Check quadrant.
+    final rowStart = (coords.row ~/ 3) * 3;
+    final colStart = (coords.col ~/ 3) * 3;
+    for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+        final row = rowStart + i;
+        final col = colStart + j;
+        if (row == coords.row && col == coords.col) {
+          continue;
+        }
+        if (field[row][col] == value) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
 }
 
 class _SudokuProblem {
