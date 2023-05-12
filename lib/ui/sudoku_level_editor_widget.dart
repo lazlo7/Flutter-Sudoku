@@ -3,7 +3,7 @@ import 'package:flutter_sudoku/model/field_cell.dart';
 import 'package:flutter_sudoku/model/field_cell_type.dart';
 import 'package:flutter_sudoku/model/field_move.dart';
 import 'package:flutter_sudoku/model/sudoku_field_keeper.dart';
-import 'package:flutter_sudoku/model/sudoku_generator.dart';
+import 'package:flutter_sudoku/model/sudoku_solver.dart';
 import 'package:flutter_sudoku/ui/sudoku_game_widget.dart';
 
 import '../model/field_coords.dart';
@@ -143,7 +143,7 @@ class _SudokuLevelEditorWidgetState extends State<SudokuLevelEditorWidget> {
       });
     });
 
-    final solution = SudokuGenerator.solveField(fieldCells);
+    final solution = SudokuSolver.solveFieldCell(fieldCells);
     if (solution == null) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Судоку не является валидным!")));

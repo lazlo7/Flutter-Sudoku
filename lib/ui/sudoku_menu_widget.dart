@@ -5,6 +5,7 @@ import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:flutter_sudoku/model/sudoku_difficulty.dart';
 import 'package:flutter_sudoku/model/sudoku_field_keeper.dart';
 import 'package:flutter_sudoku/model/sudoku_generator.dart';
+import 'package:flutter_sudoku/model/sudoku_solver.dart';
 import 'package:flutter_sudoku/model/sudoku_user_format_parser.dart';
 import 'package:flutter_sudoku/ui/sudoku_level_editor_widget.dart';
 import 'package:flutter_sudoku/ui/sudoku_levels_widget.dart';
@@ -98,7 +99,7 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
   }
 
   void onPlayButtonPressed() {
-    final newField = SudokuGenerator.generateField(
+    final newField = SudokuGenerator.generate(
         sudokuDifficulty.minClues, sudokuDifficulty.maxClues);
     final id = widget.fieldKeeper.addField(newField);
     Navigator.push(
@@ -145,7 +146,7 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
       return;
     }
 
-    final solution = SudokuGenerator.solveField(clues);
+    final solution = SudokuSolver.solveFieldCell(clues);
     if (solution == null) {
       scaffold.showSnackBar(const SnackBar(
           content:
