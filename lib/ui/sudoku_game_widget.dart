@@ -251,6 +251,9 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
   }
 
   void onClearCellButtonPressed() {
+    if (selectedCellCoords == SudokuField.invalidCoords) {
+      return;
+    }
     setState(() {
       widget._fieldKeeper.fields[widget._sudokuFieldId]!
           .clearCell(selectedCellCoords);

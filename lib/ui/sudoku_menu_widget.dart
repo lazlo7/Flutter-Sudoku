@@ -6,6 +6,7 @@ import 'package:flutter_sudoku/model/sudoku_difficulty.dart';
 import 'package:flutter_sudoku/model/sudoku_field_keeper.dart';
 import 'package:flutter_sudoku/model/sudoku_generator.dart';
 import 'package:flutter_sudoku/model/sudoku_user_format_parser.dart';
+import 'package:flutter_sudoku/ui/sudoku_level_editor_widget.dart';
 import 'package:flutter_sudoku/ui/sudoku_levels_widget.dart';
 import 'package:flutter_sudoku/ui/sudoku_game_widget.dart';
 
@@ -106,7 +107,13 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
             builder: (context) => SudokuGameWidget(id, widget.fieldKeeper)));
   }
 
-  void onCreateLevelButtonPressed() {}
+  void onCreateLevelButtonPressed() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SudokuLevelEditorWidget(widget.fieldKeeper)));
+  }
+
   void onImportLevelButtonPressed() async {
     final scaffold = ScaffoldMessenger.of(context);
     String? pathResult;
