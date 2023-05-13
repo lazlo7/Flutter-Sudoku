@@ -43,7 +43,6 @@ class SudokuGenerator {
       final neededEmpties = 81 - neededClues;
       int empties = 0;
 
-      print("started digging out");
       bool restart = false;
       bool success = false;
       while (empties < neededEmpties) {

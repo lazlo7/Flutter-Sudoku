@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sudoku/model/sudoku_field_keeper.dart';
+import 'package:flutter_sudoku/ui/loading_overlay.dart';
 import 'package:flutter_sudoku/ui/sudoku_menu_widget.dart';
 
 void main() {
@@ -17,6 +18,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         themeMode: ThemeMode.light,
-        home: SudokuMenuWidget(fieldKeeper: fieldKeeper));
+        home:
+            LoadingOverlay(child: SudokuMenuWidget(fieldKeeper: fieldKeeper)));
   }
 }

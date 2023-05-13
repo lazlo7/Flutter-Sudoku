@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:flutter_sudoku/model/sudoku_difficulty.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_sudoku/model/sudoku_field_keeper.dart';
 import 'package:flutter_sudoku/model/sudoku_generator.dart';
 import 'package:flutter_sudoku/model/sudoku_solver.dart';
 import 'package:flutter_sudoku/model/sudoku_user_format_parser.dart';
+import 'package:flutter_sudoku/ui/loading_overlay.dart';
 import 'package:flutter_sudoku/ui/sudoku_level_editor_widget.dart';
 import 'package:flutter_sudoku/ui/sudoku_levels_widget.dart';
 import 'package:flutter_sudoku/ui/sudoku_game_widget.dart';
@@ -24,7 +26,6 @@ class SudokuMenuWidget extends StatefulWidget {
 }
 
 class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
-  bool isGeneratingSudoku = false;
   SudokuDifficulty sudokuDifficulty = SudokuDifficulty.medium;
 
   @override
@@ -35,20 +36,7 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
         const SizedBox(height: 200),
         const Text("Судоку",
             style: TextStyle(color: Colors.blueGrey, fontSize: 38)),
-        SizedBox(
-            height: 160,
-            // Loading indicator.
-            child: !isGeneratingSudoku
-                ? null
-                : Center(
-                    child: Column(children: const [
-                    CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(Colors.blueGrey),
-                    ),
-                    Text("Генерируем новое судоку...",
-                        style: TextStyle(color: Colors.grey))
-                  ]))),
+        const SizedBox(height: 160),
         Padding(
             padding: const EdgeInsets.only(left: 20, right: 20),
             child: Row(
@@ -112,26 +100,18 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
     });
   }
 
-  void onPlayButtonPressed() {
-    setState(() {
-      print("isGeneratingSudoku = true;");
-      isGeneratingSudoku = true;
+  void onPlayButtonPressed() async {
+    LoadingOverlay.of(context).show();
+    compute((e) => SudokuGenerator.generate(e.key, e.value),
+            MapEntry(sudokuDifficulty.minClues, sudokuDifficulty.maxClues))
+        .then((newField) {
+      final id = widget.fieldKeeper.addField(newField);
+      LoadingOverlay.of(context).hide();
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => SudokuGameWidget(id, widget.fieldKeeper)));
     });
-
-    final newField = SudokuGenerator.generate(
-        sudokuDifficulty.minClues, sudokuDifficulty.maxClues);
-
-    setState(() {
-      print("isGeneratingSudoku = false;");
-      isGeneratingSudoku = false;
-    });
-
-    final id = widget.fieldKeeper.addField(newField);
-
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => SudokuGameWidget(id, widget.fieldKeeper)));
   }
 
   void onCreateLevelButtonPressed() {
