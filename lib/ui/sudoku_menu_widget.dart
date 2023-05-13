@@ -24,6 +24,7 @@ class SudokuMenuWidget extends StatefulWidget {
 }
 
 class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
+  bool isGeneratingSudoku = false;
   SudokuDifficulty sudokuDifficulty = SudokuDifficulty.medium;
 
   @override
@@ -34,7 +35,20 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
         const SizedBox(height: 200),
         const Text("Судоку",
             style: TextStyle(color: Colors.blueGrey, fontSize: 38)),
-        const SizedBox(height: 160),
+        SizedBox(
+            height: 160,
+            // Loading indicator.
+            child: !isGeneratingSudoku
+                ? null
+                : Center(
+                    child: Column(children: const [
+                    CircularProgressIndicator(
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Colors.blueGrey),
+                    ),
+                    Text("Генерируем новое судоку...",
+                        style: TextStyle(color: Colors.grey))
+                  ]))),
         Padding(
             padding: const EdgeInsets.only(left: 20, right: 20),
             child: Row(
@@ -99,9 +113,21 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
   }
 
   void onPlayButtonPressed() {
+    setState(() {
+      print("isGeneratingSudoku = true;");
+      isGeneratingSudoku = true;
+    });
+
     final newField = SudokuGenerator.generate(
         sudokuDifficulty.minClues, sudokuDifficulty.maxClues);
+
+    setState(() {
+      print("isGeneratingSudoku = false;");
+      isGeneratingSudoku = false;
+    });
+
     final id = widget.fieldKeeper.addField(newField);
+
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -156,7 +182,7 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
 
     final field = SudokuField(clues, solution);
     widget.fieldKeeper.addField(field);
-    
+
     scaffold.showSnackBar(const SnackBar(
         content:
             Text("Импортировано новое судоку! Перейдите в меню уровней.")));

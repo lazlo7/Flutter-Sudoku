@@ -8,10 +8,6 @@ import 'field_cell_type.dart';
 import 'field_coords.dart';
 
 class SudokuGenerator {
-  /*
-  Based on: http://zhangroup.aporc.org/images/files/Paper_3485.pdf
-  */
-
   static const _prefillClues = 11;
   static const _shuffleRepeats = 1000;
   static final _random = Random();
