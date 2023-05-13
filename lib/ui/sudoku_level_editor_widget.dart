@@ -139,7 +139,11 @@ class _SudokuLevelEditorWidgetState extends State<SudokuLevelEditorWidget> {
     final fieldCells = List.generate(9, (row) {
       return List.generate(9, (col) {
         var value = field[row][col];
-        return FieldCell(value: value, type: FieldCellType.clue);
+        return FieldCell(
+            value: value,
+            type: value == FieldCell.emptyValue
+                ? FieldCellType.empty
+                : FieldCellType.clue);
       });
     });
 
