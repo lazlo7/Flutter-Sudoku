@@ -35,7 +35,7 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
   void loadHints() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      hints = prefs.getInt("hints") ?? 0;
+      hints = prefs.getInt("hints") ?? 5;
     });
   }
 
