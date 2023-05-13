@@ -31,34 +31,30 @@ class SudokuSolver {
     List<List<int>> solution = [];
     int solutionsFound = 0;
 
-    void search(_SudokuProblem problem) {
-      final start = _NodeState(problem.original);
-      if (problem.isSolved(start.state)) {
-        ++solutionsFound;
-        solution = start.state;
-      }
-
-      final stack = <_NodeState>[];
-      stack.add(start);
-
-      while (stack.isNotEmpty) {
-        final node = stack.removeLast();
-
-        if (problem.isSolved(node.state)) {
-          ++solutionsFound;
-          if (solutionsFound > 1) {
-            return;
-          }
-
-          solution = node.state;
-        }
-
-        stack.addAll(node.expand(problem));
-      }
+    final problem = SudokuProblem(field);
+    final start = NodeState(problem.original);
+    if (problem.isSolved(start.state)) {
+      ++solutionsFound;
+      solution = start.state;
     }
 
-    final problem = _SudokuProblem(field);
-    search(problem);
+    final stack = <NodeState>[];
+    stack.add(start);
+
+    while (stack.isNotEmpty) {
+      final node = stack.removeLast();
+
+      if (problem.isSolved(node.state)) {
+        ++solutionsFound;
+        if (solutionsFound > 1) {
+          break;
+        }
+
+        solution = node.state;
+      }
+
+      stack.addAll(node.expand(problem));
+    }
 
     return solutionsFound > 1 ? null : solution;
   }
@@ -138,14 +134,14 @@ class SudokuSolver {
   }
 }
 
-class _SudokuProblem {
+class SudokuProblem {
   static const int _size = 9;
   static const int _height = 3;
   static const int _solvedExpectedSum = 45;
 
   final List<List<int>> original;
 
-  _SudokuProblem(this.original);
+  SudokuProblem(this.original);
 
   bool isSolved(List<List<int>> state) {
     // Check the sum of rows and columns.
@@ -263,11 +259,11 @@ class _SudokuProblem {
   }
 }
 
-class _NodeState {
+class NodeState {
   final List<List<int>> state;
 
-  _NodeState(this.state);
+  NodeState(this.state);
 
-  List<_NodeState> expand(_SudokuProblem problem) =>
-      problem.getSuccessors(state).map((e) => _NodeState(e)).toList();
+  List<NodeState> expand(SudokuProblem problem) =>
+      problem.getSuccessors(state).map((e) => NodeState(e)).toList();
 }
