@@ -4,6 +4,7 @@ import 'package:flutter_sudoku/model/field_cell_type.dart';
 import 'package:flutter_sudoku/model/field_coords.dart';
 import 'package:flutter_sudoku/ui/icon_undertext_button.dart';
 import 'package:flutter_sudoku/model/sudoku_field_keeper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/field_move.dart';
 import '../model/sudoku_field.dart';
@@ -23,13 +24,42 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
   FieldCoords selectedCellCoords = SudokuField.invalidCoords;
   FieldCoords conflictingCellCoords = SudokuField.invalidCoords;
   List<FieldMove> history = [];
+  int hints = 0;
+
+  @override
+  void initState() {
+    loadHints();
+    super.initState();
+  }
+
+  void loadHints() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      hints = prefs.getInt("hints") ?? 0;
+    });
+  }
+
+  void setHints(int delta) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      hints += delta;
+      prefs.setInt("hints", hints);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
       children: [
-        const SizedBox(height: 100),
+        SizedBox(
+            height: 100,
+            // Show the number of hints.
+            child: Center(
+              child: Text("Подсказки: $hints",
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 20)),
+            )),
         Padding(
             padding: const EdgeInsets.only(left: 10, right: 10),
             child: GridView.count(
@@ -234,9 +264,43 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
         }
       });
     } else {
+      if (sudokuField.isSolved()) {
+        onFieldSolved();
+        return;
+      }
+
       history.add(moveBefore);
       widget._fieldKeeper.saveFields();
     }
+  }
+
+  void onFieldSolved() {
+    final hintsReward =
+        widget._fieldKeeper.fields[widget._sudokuFieldId]!.hintsReward;
+
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setInt("hints", prefs.getInt("hints") ?? 0 + hintsReward);
+
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Поздравляем!"),
+              content: Text("Судоку решено - +$hintsReward подсказка(-ок)"),
+              actions: [
+                TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                      // Remove the field.
+                      widget._fieldKeeper.removeField(widget._sudokuFieldId);
+                    },
+                    icon: const Icon(Icons.close),
+                    label: const Text("Закрыть судоку"))
+              ],
+            );
+          });
+    });
   }
 
   void onUndoButtonPressed() {
@@ -291,5 +355,37 @@ class _SudokuGameWidgetState extends State<SudokuGameWidget> {
     });
   }
 
-  void onHintButtonPressed() {}
+  void onHintButtonPressed() async {
+    final field = widget._fieldKeeper.fields[widget._sudokuFieldId]!;
+
+    if (hints <= 0) {
+      return;
+    }
+
+    if (selectedCellCoords == SudokuField.invalidCoords) {
+      return;
+    }
+
+    if (field.field[selectedCellCoords.row][selectedCellCoords.col].type ==
+        FieldCellType.clue) {
+      return;
+    }
+
+    final correctValue =
+        field.solution[selectedCellCoords.row][selectedCellCoords.col];
+
+    setState(() {
+      field.field[selectedCellCoords.row][selectedCellCoords.col] =
+          FieldCell(value: correctValue, type: FieldCellType.clue);
+    });
+
+    setHints(-1);
+
+    if (field.isSolved()) {
+      onFieldSolved();
+      return;
+    }
+
+    widget._fieldKeeper.saveFields();
+  }
 }

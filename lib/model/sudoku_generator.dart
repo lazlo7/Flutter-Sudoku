@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_sudoku/model/field_cell.dart';
+import 'package:flutter_sudoku/model/sudoku_difficulty.dart';
 import 'package:flutter_sudoku/model/sudoku_field.dart';
 import 'package:flutter_sudoku/model/sudoku_solver.dart';
 
@@ -13,7 +14,7 @@ class SudokuGenerator {
   static final _random = Random();
 
   /// Returns a new Sudoku field with clues in the range [minClues], [maxClues].
-  static SudokuField generate(int minClues, int maxClues) {
+  static SudokuField generate(SudokuDifficulty difficulty) {
     List<List<int>> field;
     List<List<int>>? solution;
 
@@ -39,6 +40,8 @@ class SudokuGenerator {
       List<List<bool>> forbidden =
           List<List<bool>>.generate(9, (_) => List<bool>.filled(9, false));
 
+      final maxClues = difficulty.maxClues;
+      final minClues = difficulty.minClues;
       final neededClues = _random.nextInt(maxClues - minClues + 1) + minClues;
       final neededEmpties = 81 - neededClues;
       int empties = 0;
@@ -114,7 +117,7 @@ class SudokuGenerator {
                     ? FieldCellType.empty
                     : FieldCellType.clue)));
 
-    return SudokuField(fieldCells, solution);
+    return SudokuField(fieldCells, solution, difficulty.hintsReward);
   }
 
   /// Returns a new randomly generated 'prefill'

@@ -15,6 +15,7 @@ SudokuField _$SudokuFieldFromJson(Map<String, dynamic> json) => SudokuField(
       (json['solution'] as List<dynamic>)
           .map((e) => (e as List<dynamic>).map((e) => e as int).toList())
           .toList(),
+      json['hintsReward'] as int,
     );
 
 Map<String, dynamic> _$SudokuFieldToJson(SudokuField instance) =>
@@ -22,4 +23,5 @@ Map<String, dynamic> _$SudokuFieldToJson(SudokuField instance) =>
       'field':
           instance.field.map((e) => e.map((e) => e.toJson()).toList()).toList(),
       'solution': instance.solution,
+      'hintsReward': instance.hintsReward,
     };

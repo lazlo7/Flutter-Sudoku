@@ -15,10 +15,12 @@ class SudokuField {
   final List<List<FieldCell>> field;
   // The solution to this field.
   final List<List<int>> solution;
+  // The number of hints to earn after solving this field.
+  final int hintsReward;
   // Maps a cell to it's notes (possible values left by the player).
   final Map<FieldCoords, List<int>> notes = {};
 
-  SudokuField(this.field, this.solution);
+  SudokuField(this.field, this.solution, this.hintsReward);
 
   factory SudokuField.fromJson(Map<String, dynamic> json) =>
       _$SudokuFieldFromJson(json);

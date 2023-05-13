@@ -150,7 +150,7 @@ class _SudokuLevelEditorWidgetState extends State<SudokuLevelEditorWidget> {
       return;
     }
 
-    final sudokuField = SudokuField(fieldCells, solution);
+    final sudokuField = SudokuField(fieldCells, solution, 0);
     final sudokuId = widget._fieldKeeper.addField(sudokuField);
     Navigator.push(
         context,

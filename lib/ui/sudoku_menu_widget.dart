@@ -102,8 +102,8 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
 
   void onPlayButtonPressed() async {
     LoadingOverlay.of(context).show();
-    compute((e) => SudokuGenerator.generate(e.key, e.value),
-            MapEntry(sudokuDifficulty.minClues, sudokuDifficulty.maxClues))
+    compute((difficulty) => SudokuGenerator.generate(difficulty),
+            sudokuDifficulty)
         .then((newField) {
       final id = widget.fieldKeeper.addField(newField);
       LoadingOverlay.of(context).hide();
@@ -160,7 +160,7 @@ class _SudokuMenuWidgetState extends State<SudokuMenuWidget> {
       return;
     }
 
-    final field = SudokuField(clues, solution);
+    final field = SudokuField(clues, solution, 0);
     widget.fieldKeeper.addField(field);
 
     scaffold.showSnackBar(const SnackBar(
