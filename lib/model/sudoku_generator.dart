@@ -33,7 +33,12 @@ class SudokuGenerator {
         continue;
       }
 
-      field = solution;
+      // Copy values from the solution into field.
+      for (int row = 0; row < 9; ++row) {
+        for (int col = 0; col < 9; ++col) {
+          field[row][col] = solution[row][col];
+        }
+      }
 
       List<List<bool>> forbidden =
           List<List<bool>>.generate(9, (_) => List<bool>.filled(9, false));
@@ -100,7 +105,9 @@ class SudokuGenerator {
     }
 
     // 5. Finally, shuffle the field.
-    _shuffle(field, solution);
+    final result = _shuffle(field, solution);
+    field = result.key;
+    solution = result.value;
 
     final fieldCells = List<List<FieldCell>>.generate(
         9,
@@ -191,7 +198,8 @@ class SudokuGenerator {
   }
 
   /// Shuffles [field] and [solution] using differrent equivalent transformations.
-  static void _shuffle(List<List<int>> field, List<List<int>> solution) {
+  static MapEntry<List<List<int>>, List<List<int>>> _shuffle(
+      List<List<int>> field, List<List<int>> solution) {
     final shufflers = <_FieldShuffler>[
       _TwoMutualDigitsShuffler(),
       _TwoColumnsInSameColumnOfBlocksShuffler(),
@@ -207,18 +215,22 @@ class SudokuGenerator {
         shuffler.shuffle(field, solution, _random);
       }
     }
+
+    return MapEntry(field, solution);
   }
 }
 
 /// Common interface for all field shufflers.
 abstract class _FieldShuffler {
-  void shuffle(List<List<int>> field, List<List<int>> solution, Random random);
+  MapEntry<List<List<int>>, List<List<int>>> shuffle(
+      List<List<int>> field, List<List<int>> solution, Random random);
 }
 
 /// Mutually exchanges two digits in the field.
 class _TwoMutualDigitsShuffler implements _FieldShuffler {
   @override
-  void shuffle(List<List<int>> field, List<List<int>> solution, Random random) {
+  MapEntry<List<List<int>>, List<List<int>>> shuffle(
+      List<List<int>> field, List<List<int>> solution, Random random) {
     final digit1 = random.nextInt(9) + 1;
 
     int digit2;
@@ -241,13 +253,16 @@ class _TwoMutualDigitsShuffler implements _FieldShuffler {
         }
       }
     }
+
+    return MapEntry(field, solution);
   }
 }
 
 /// Mutually exchanges two columns in the same column of blocks.
 class _TwoColumnsInSameColumnOfBlocksShuffler implements _FieldShuffler {
   @override
-  void shuffle(List<List<int>> field, List<List<int>> solution, Random random) {
+  MapEntry<List<List<int>>, List<List<int>>> shuffle(
+      List<List<int>> field, List<List<int>> solution, Random random) {
     final columnBlock = random.nextInt(3);
     final column1 = random.nextInt(3);
 
@@ -267,13 +282,16 @@ class _TwoColumnsInSameColumnOfBlocksShuffler implements _FieldShuffler {
           solution[row][columnBlock * 3 + column2];
       solution[row][columnBlock * 3 + column2] = tempSolution;
     }
+
+    return MapEntry(field, solution);
   }
 }
 
 /// Mutually exchanges two columns of blocks.
 class _TwoColumnsOfBlocksShuffler implements _FieldShuffler {
   @override
-  void shuffle(List<List<int>> field, List<List<int>> solution, Random random) {
+  MapEntry<List<List<int>>, List<List<int>>> shuffle(
+      List<List<int>> field, List<List<int>> solution, Random random) {
     final columnBlock1 = random.nextInt(3);
     int columnBlock2;
     do {
@@ -293,13 +311,16 @@ class _TwoColumnsOfBlocksShuffler implements _FieldShuffler {
         solution[row][columnBlock2 * 3 + column] = tempSolution;
       }
     }
+
+    return MapEntry(field, solution);
   }
 }
 
 // Mutually exchanges two rows in the same row of blocks.
 class _TwoRowsInSameRowOfBlocksShuffler implements _FieldShuffler {
   @override
-  void shuffle(List<List<int>> field, List<List<int>> solution, Random random) {
+  MapEntry<List<List<int>>, List<List<int>>> shuffle(
+      List<List<int>> field, List<List<int>> solution, Random random) {
     final rowBlock = random.nextInt(3);
     final row1 = random.nextInt(3);
 
@@ -318,13 +339,16 @@ class _TwoRowsInSameRowOfBlocksShuffler implements _FieldShuffler {
           solution[rowBlock * 3 + row2][column];
       solution[rowBlock * 3 + row2][column] = tempSolution;
     }
+
+    return MapEntry(field, solution);
   }
 }
 
 /// Mutually exchanges two rows of blocks.
 class _TwoRowsOfBlocksShuffler implements _FieldShuffler {
   @override
-  void shuffle(List<List<int>> field, List<List<int>> solution, Random random) {
+  MapEntry<List<List<int>>, List<List<int>>> shuffle(
+      List<List<int>> field, List<List<int>> solution, Random random) {
     final rowBlock1 = random.nextInt(3);
     int rowBlock2;
     do {
@@ -343,13 +367,16 @@ class _TwoRowsOfBlocksShuffler implements _FieldShuffler {
         solution[rowBlock2 * 3 + row][column] = tempSolution;
       }
     }
+
+    return MapEntry(field, solution);
   }
 }
 
 /// Rolls the grid.
 class _GridRollingShuffler implements _FieldShuffler {
   @override
-  void shuffle(List<List<int>> field, List<List<int>> solution, Random random) {
+  MapEntry<List<List<int>>, List<List<int>>> shuffle(
+      List<List<int>> field, List<List<int>> solution, Random random) {
     final rolling = random.nextInt(3);
     final rollingDirection = random.nextBool();
 
@@ -378,5 +405,7 @@ class _GridRollingShuffler implements _FieldShuffler {
         solution[row][rolling * 3] = tempSolution;
       }
     }
+
+    return MapEntry(field, solution);
   }
 }
